@@ -1,5 +1,9 @@
 package main
 
+import (
+	"githug.com/bob118/fm/config/fmconfig"
+)
+
 func main() {
-	println("hello")
+	fmconfig.NewFmconfig().Read(fmconfig.CFGFILE)
 }

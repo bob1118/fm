@@ -1,49 +1,52 @@
 package fmconfig
 
 import (
+	"encoding/xml"
+	"io/ioutil"
+	"os"
 	"time"
 )
 
 //FMhttpserver struct.
 type FMhttpserver struct {
-	address      string
-	readtimeout  time.Duration
-	writetimeout time.Duration
+	Address      string
+	Readtimeout  time.Duration
+	Writetimeout time.Duration
 }
 
 //FMdatabase struct {
 type FMdatabase struct {
-	dbtype        string
-	dbname        string
-	dbaddress     string
-	dbuser        string
-	dbpassword    string
-	dbtableprefix string
+	Type        string
+	Name        string
+	Address     string
+	User        string
+	Password    string
+	Tableprefix string
 }
 
 //FMruntime struct {
 type FMruntime struct {
-	runmode    string
-	jwtsecret  string
-	pagesize   uint
-	enablehash bool
+	Runmode    string
+	Jwtsecret  string
+	Pagesize   uint
+	Enablehash bool
 }
 
 //FMesl struct {
 type FMesl struct {
-	esltype     string
-	esladdress  string
-	eslpassword string
-	esltimeout  time.Duration
-	eslretries  uint
+	Type     string
+	Address  string
+	Password string
+	Timeout  time.Duration
+	Retries  uint
 }
 
 //FMconfig struct {
 type FMconfig struct {
-	server   FMhttpserver
-	database FMdatabase
-	esl      FMesl
-	runtime  FMruntime
+	Server   FMhttpserver
+	Database FMdatabase
+	Runtime  FMruntime
+	Esl      FMesl
 }
 
 //CFGFILE file.
@@ -51,42 +54,68 @@ const CFGFILE = "conf.xml"
 
 //NewFmconfig return default fmconfig .
 func NewFmconfig() *FMconfig {
-	cfg := FMconfig{
-		server: FMhttpserver{
-			address:      "127.0.0.1:8021",
-			readtimeout:  4 * time.Second,
-			writetimeout: 4 * time.Second,
+	c := FMconfig{
+		Server: FMhttpserver{
+			Address:      "127.0.0.1:8021",
+			Readtimeout:  4 * time.Second,
+			Writetimeout: 4 * time.Second,
 		},
-		database: FMdatabase{
-			dbtype:        "postgres",
-			dbname:        "freeswitch",
-			dbaddress:     "127.0.0.1:5432",
-			dbuser:        "fsdba",
-			dbpassword:    "fsdba",
-			dbtableprefix: "",
+		Database: FMdatabase{
+			Type:        "postgres",
+			Name:        "freeswitch",
+			Address:     "127.0.0.1:5432",
+			User:        "fsdba",
+			Password:    "fsdba",
+			Tableprefix: "",
 		},
-		runtime: FMruntime{
-			runmode:    "debug",
-			jwtsecret:  "abcdefghijklmnopqrstuvwxyz",
-			pagesize:   20,
-			enablehash: true,
+		Runtime: FMruntime{
+			Runmode:    "debug",
+			Jwtsecret:  "abcdefghijklmnopqrstuvwxyz",
+			Pagesize:   20,
+			Enablehash: true,
 		},
-		esl: FMesl{
-			esltype:    "inbound",
-			esladdress: "127.0.0.1:8021",
-			esltimeout: 4 * time.Second,
-			eslretries: 0,
+		Esl: FMesl{
+			Type:    "inbound",
+			Address: "127.0.0.1:8021",
+			Timeout: 4 * time.Second,
+			Retries: 0,
 		},
 	}
-	return &cfg
+	return &c
 }
 
 //Read config from file.
 func (p *FMconfig) Read(file string) error {
+	var e error
+
+	f, err := os.Open(file)
+	defer f.Close()
+	if err != nil {
+		return err
+	}
+
+	data, err := ioutil.ReadAll(f)
+	if err != nil {
+		return err
+	}
+
+	e = xml.Unmarshal(data, p)
+	if e != nil {
+		return e
+	}
 	return nil
 }
 
 //Write config to file.
 func (p *FMconfig) Write(file string) error {
-	return nil
+	var e error
+
+	//f, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE, 0666)
+	f, err := os.Create(file)
+	defer f.Close()
+	if err != nil {
+		return err
+	}
+	f.Sync()
+	return e
 }
