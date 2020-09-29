@@ -7,6 +7,9 @@ import (
 	"time"
 )
 
+//CFGFILE file.
+const CFGFILE = "fm.conf.xml"
+
 //FMhttpserver struct.
 type FMhttpserver struct {
 	Address      string
@@ -43,18 +46,17 @@ type FMesl struct {
 
 //FMconfig struct {
 type FMconfig struct {
+	File     string `xml:"file,attr"`
 	Server   FMhttpserver
 	Database FMdatabase
 	Runtime  FMruntime
 	Esl      FMesl
 }
 
-//CFGFILE file.
-const CFGFILE = "conf.xml"
-
 //NewFmconfig return default fmconfig .
 func NewFmconfig() *FMconfig {
 	c := FMconfig{
+		File: CFGFILE,
 		Server: FMhttpserver{
 			Address:      "127.0.0.1:8021",
 			Readtimeout:  4 * time.Second,
@@ -75,20 +77,21 @@ func NewFmconfig() *FMconfig {
 			Enablehash: true,
 		},
 		Esl: FMesl{
-			Type:    "inbound",
-			Address: "127.0.0.1:8021",
-			Timeout: 4 * time.Second,
-			Retries: 0,
+			Type:     "inbound",
+			Address:  "127.0.0.1:8021",
+			Password: "ClueCon",
+			Timeout:  4 * time.Second,
+			Retries:  0,
 		},
 	}
 	return &c
 }
 
 //Read config from file.
-func (p *FMconfig) Read(file string) error {
+func (p *FMconfig) Read() error {
 	var e error
 
-	f, err := os.Open(file)
+	f, err := os.Open(CFGFILE)
 	defer f.Close()
 	if err != nil {
 		return err
@@ -107,15 +110,24 @@ func (p *FMconfig) Read(file string) error {
 }
 
 //Write config to file.
-func (p *FMconfig) Write(file string) error {
+func (p *FMconfig) Write() error {
 	var e error
 
 	//f, err := os.OpenFile(file, os.O_WRONLY|os.O_CREATE, 0666)
-	f, err := os.Create(file)
+	f, err := os.Create(CFGFILE)
 	defer f.Close()
 	if err != nil {
 		return err
 	}
+
+	//data, err := xml.Marshal(p)
+	data, err := xml.MarshalIndent(p, "", "  ")
+	if err != nil {
+		return err
+	}
+
+	f.WriteString(xml.Header)
+	f.Write(data)
 	f.Sync()
 	return e
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FMconfig file="fm.conf.xml">
+  <Server>
+    <Address>127.0.0.1:8021</Address>
+    <Readtimeout>4000000000</Readtimeout>
+    <Writetimeout>4000000000</Writetimeout>
+  </Server>
+  <Database>
+    <Type>postgres</Type>
+    <Name>freeswitch</Name>
+    <Address>127.0.0.1:5432</Address>
+    <User>fsdba</User>
+    <Password>fsdba</Password>
+    <Tableprefix></Tableprefix>
+  </Database>
+  <Runtime>
+    <Runmode>debug</Runmode>
+    <Jwtsecret>abcdefghijklmnopqrstuvwxyz</Jwtsecret>
+    <Pagesize>20</Pagesize>
+    <Enablehash>true</Enablehash>
+  </Runtime>
+  <Esl>
+    <Type>inbound</Type>
+    <Address>127.0.0.1:8021</Address>
+    <Password>ClueCon</Password>
+    <Timeout>4000000000</Timeout>
+    <Retries>0</Retries>
+  </Esl>
+</FMconfig>

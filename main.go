@@ -5,5 +5,7 @@ import (
 )
 
 func main() {
-	fmconfig.NewFmconfig().Read(fmconfig.CFGFILE)
+	cfg := fmconfig.NewFmconfig()
+	cfg.Read()
+	cfg.Write()
 }
