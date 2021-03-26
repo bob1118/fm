@@ -53,12 +53,21 @@ type FMconfig struct {
 	Esl      FMesl
 }
 
+var CFG *FMconfig
+
+func init() {
+	CFG = NewFmconfig()
+	if CFG.Read() != nil {
+		CFG.Write()
+	}
+}
+
 //NewFmconfig return default fmconfig .
 func NewFmconfig() *FMconfig {
 	c := FMconfig{
 		File: CFGFILE,
 		Server: FMhttpserver{
-			Address:      "127.0.0.1:8021",
+			Address:      "127.0.0.1:80",
 			Readtimeout:  4 * time.Second,
 			Writetimeout: 4 * time.Second,
 		},

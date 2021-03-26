@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <FMconfig file="fm.conf.xml">
   <Server>
-    <Address>127.0.0.1:8021</Address>
+    <Address>10.10.10.250:80</Address>
     <Readtimeout>4000000000</Readtimeout>
     <Writetimeout>4000000000</Writetimeout>
   </Server>
