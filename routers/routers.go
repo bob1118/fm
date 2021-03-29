@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"githug.com/bob118/fm/config/fmconfig"
 	v1 "githug.com/bob118/fm/routers/api/v1"
+	"githug.com/bob118/fm/routers/fsapi"
 )
 
 func NewRouter() *gin.Engine {
@@ -12,10 +13,10 @@ func NewRouter() *gin.Engine {
 	r.Use(gin.Recovery())
 	gin.SetMode(fmconfig.CFG.Runtime.Runmode)
 
-	//freeswitch mod_xml_curl request
-	r.POST("/fsapi")
+	//receive mod_xml_curl request
+	r.POST("/fsapi", fsapi.PostFromXmlCurl)
 
-	//open api request
+	//receive open api request
 	apiv1 := r.Group("/api/v1")
 	{
 		apiv1.GET("/accounts", v1.GetAccounts)
