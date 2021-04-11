@@ -29,10 +29,10 @@ func NewRouter() *gin.Engine {
 		apiv1.PUT("/gateways/:uuid", v1.PutGateway)
 		apiv1.DELETE("/gateways/:uuid", v1.DeleteGateway)
 
-		apiv1.GET("/e164s")
-		apiv1.POST("/e164s")
-		apiv1.PUT("/e164s/:uuid")
-		apiv1.DELETE("/e164s/:uuid")
+		apiv1.GET("/e164s", v1.GetE164s)
+		apiv1.POST("/e164s", v1.PostE164)
+		apiv1.PUT("/e164s/:uuid", v1.PutE164)
+		apiv1.DELETE("/e164s/:uuid", v1.DeleteE164)
 
 		apiv1.POST("/call/dial")
 		apiv1.POST("/call/dialout")
