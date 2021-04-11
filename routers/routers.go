@@ -24,10 +24,10 @@ func NewRouter() *gin.Engine {
 		apiv1.PUT("/accounts/:uuid", v1.PutAccount)
 		apiv1.DELETE("/accounts/:uuid", v1.DeleteAccount)
 
-		apiv1.GET("/gateways")
-		apiv1.POST("/gateways")
-		apiv1.PUT("/gateways/:uuid")
-		apiv1.DELETE("/gateways/:uuid")
+		apiv1.GET("/gateways", v1.GetGateways)
+		apiv1.POST("/gateways", v1.PostGateway)
+		apiv1.PUT("/gateways/:uuid", v1.PutGateway)
+		apiv1.DELETE("/gateways/:uuid", v1.DeleteGateway)
 
 		apiv1.GET("/e164s")
 		apiv1.POST("/e164s")

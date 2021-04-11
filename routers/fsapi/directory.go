@@ -2,6 +2,7 @@ package fsapi
 
 import (
 	"github.com/gin-gonic/gin"
+	"githug.com/bob118/fm/utils"
 )
 
 // 1,request:
@@ -33,31 +34,31 @@ func doDirectory(c *gin.Context) (b string) {
 	body := Notfound
 
 	//useragent reg, subscribe invite.
-	if equal(c.PostForm("Event-Name"), "REQUEST_PARAMS") && equal(c.PostForm("action"), "sip_auth") {
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") {
 		method := c.PostForm("sip_auth_method")
 		switch method {
 		case "REGISTER", "SUBSCRIBE", "INVITE":
 			//do auth
 		}
 	}
-	if equal(c.PostForm("Event-Name"), "REQUEST_PARAMS") && equal(c.PostForm("action"), "reverse-auth-lookup") {
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "reverse-auth-lookup") {
 	}
 
 	//voicemail message-count.
-	if equal(c.PostForm("Event-Name"), "GENERAL") && equal(c.PostForm("action"), "message-count") {
+	if utils.IsEqual(c.PostForm("Event-Name"), "GENERAL") && utils.IsEqual(c.PostForm("action"), "message-count") {
 	}
 
 	//multi tenant, sofia profile internal rescan/restart.
-	if equal(c.PostForm("Event-Name"), "REQUEST_PARAMS") && equal(c.PostForm("purpose"), "gateways") && equal(c.PostForm("profile"), "internal") {
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "gateways") && utils.IsEqual(c.PostForm("profile"), "internal") {
 		//
 	}
-	if equal(c.PostForm("Event-Name"), "REQUEST_PARAMS") && equal(c.PostForm("purpose"), "gateways") && equal(c.PostForm("profile"), "external") {
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "gateways") && utils.IsEqual(c.PostForm("profile"), "external") {
 	}
 
 	//
-	if equal(c.PostForm("Event-Name"), "REQUEST_PARAMS") && equal(c.PostForm("purpose"), "network-list") {
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "network-list") {
 	}
-	if equal(c.PostForm("Event-Name"), "REQUEST_PARAMS") && equal(c.PostForm("purpose"), "publish-vm") {
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "publish-vm") {
 	}
 	return body
 }

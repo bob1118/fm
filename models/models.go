@@ -1,9 +1,7 @@
 package models
 
 import (
-	"crypto/md5"
 	"fmt"
-	"io"
 	"log"
 
 	"github.com/jmoiron/sqlx"
@@ -25,11 +23,4 @@ func init() {
 //CloseDB funciton.
 func CloseDB() {
 	defer db.Close()
-}
-
-//MakeA1Hash function.
-func MakeA1Hash(in string) (s string) {
-	h := md5.New()
-	io.WriteString(h, in)
-	return fmt.Sprintf("%x", h.Sum(nil))
 }

@@ -2,7 +2,6 @@ package fsapi
 
 import (
 	"net/http"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,7 +16,7 @@ const Notfound = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 //PostFromXmlCurl function
 func PostFromXmlCurl(c *gin.Context) {
 
-	responseBody := ""
+	responseBody := Notfound
 	value := c.PostForm("section")
 	switch value {
 	case "configuration":
@@ -30,9 +29,4 @@ func PostFromXmlCurl(c *gin.Context) {
 		responseBody = doPhrases(c)
 	}
 	c.String(http.StatusOK, responseBody)
-}
-
-//string compare case-insensitivity
-func equal(s string, d string) (b bool) {
-	return strings.EqualFold(s, d)
 }

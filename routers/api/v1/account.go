@@ -9,12 +9,14 @@ import (
 	"githug.com/bob118/fm/config/fmconfig"
 	"githug.com/bob118/fm/ec"
 	"githug.com/bob118/fm/models"
+	"githug.com/bob118/fm/utils"
 )
 
 //GetAccounts function.
 //request:	GET /api/v1/accounts?uuid=xxx&id=xxx&domain=xxx&page=xxx
 //response:	json
 func GetAccounts(c *gin.Context) {
+
 	code := ec.SUCCESS
 	condition := "true"
 	data := make(map[string]interface{})
@@ -37,6 +39,7 @@ func GetAccounts(c *gin.Context) {
 
 	data["count"] = models.GetAccountsCount(condition)
 	data["lists"] = models.GetAccounts(condition)
+
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
 		"data": data,
@@ -78,7 +81,7 @@ func PostAccountJSON(c *gin.Context) {
 			}
 			if ua.Aa1hash == "" { // md5(user:domain:password)
 				s := fmt.Sprintf("%s:%s:%s", ua.Aid, ua.Adomain, ua.Apassword)
-				ua.Aa1hash = models.MakeA1Hash(s)
+				ua.Aa1hash = utils.MakeA1Hash(s)
 			}
 			if ua.Agroup == "" {
 				ua.Agroup = "default"
@@ -101,11 +104,12 @@ func PostAccountJSON(c *gin.Context) {
 	}
 
 	if code == ec.SUCCESS {
-		isExist, _ := models.IsExistByiddomain(ua)
+		isExist, old := models.IsExistByiddomain(ua)
 		if isExist { //id@domain exist already.
+			ua = old
 			code = ec.ERROR_ITEM_EXIST
 		} else { //insert ua into account.
-			models.CreateAccount(ua)
+			models.CreateAccount(&ua)
 		}
 	}
 	c.JSON(http.StatusOK, gin.H{

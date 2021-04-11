@@ -4,6 +4,8 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+
+	"githug.com/bob118/fm/utils"
 )
 
 // -- public.cc_accounts definition
@@ -46,8 +48,7 @@ type Account struct {
 }
 
 //GetAccountsCount
-func GetAccountsCount(condition interface{}) (c int) {
-	var count int
+func GetAccountsCount(condition interface{}) (count int) {
 	q := fmt.Sprintf("select count(1) from cc_accounts where %s", condition)
 	db.Get(&count, q)
 	return count
@@ -58,22 +59,6 @@ func GetAccounts(condition interface{}) (accounts []Account) {
 	q := fmt.Sprintf("select * from cc_accounts where %s", condition)
 	db.Select(&accounts, q)
 	return accounts
-}
-
-//IsExistByuuid
-func IsExistByuuid(uuid string) (b bool, out Account) {
-	var isExist bool
-	ua := Account{}
-
-	q := fmt.Sprintf("select * from cc_accounts where true and account_uuid='%s' limit 1", uuid)
-	if err := db.Get(&ua, q); err != nil {
-		//if err == sql.ErrNoRows {
-		//}
-		isExist = false
-	} else {
-		isExist = true
-	}
-	return isExist, ua
 }
 
 //IsExistByiddomain
@@ -92,24 +77,41 @@ func IsExistByiddomain(new Account) (isExist bool, old Account) {
 }
 
 //CreateAccount
-func CreateAccount(in Account) (e error) {
-	//var err error
-	var ua Account = in
+func CreateAccount(in *Account) (e error) {
+	var err error
+
+	ua := in
 	q := fmt.Sprintf("insert into cc_accounts(account_id,account_name,account_auth,account_password,account_a1hash,account_group,account_domain,account_proxy,account_cacheable)values('%s','%s','%s','%s','%s','%s','%s','%s','%s')",
 		ua.Aid, ua.Aname, ua.Aauth, ua.Apassword, ua.Aa1hash, ua.Agroup, ua.Adomain, ua.Aproxy, ua.Acacheable)
 	db.MustExec(q)
-	return nil
+
+	return err
 }
 
 //CreateAccountEx
 //gen safe uuid
 func CreateAccountEx(in Account) (e error) { return nil }
 
+//IsExistByuuid
+func IsExistByuuid(uuid string) (b bool, out Account) {
+	var isExist bool
+	ua := Account{}
+
+	q := fmt.Sprintf("select * from cc_accounts where true and account_uuid='%s' limit 1", uuid)
+	if err := db.Get(&ua, q); err != nil {
+		if err == sql.ErrNoRows {
+			isExist = false
+		}
+	} else {
+		isExist = true
+	}
+	return isExist, ua
+}
+
 //ModifyAccount
 func ModifyAccount(old Account, new *Account) (e error) {
-	var err error
-	isNewHash := 0
 
+	isNewHash := 0
 	q := "update cc_accounts set "
 	if new.Aid == "" {
 		new.Aid = old.Aid
@@ -156,7 +158,7 @@ func ModifyAccount(old Account, new *Account) (e error) {
 	}
 
 	if isNewHash > 0 { //make a1hash, MakeA1Hash(user:domain:password)
-		newHash := MakeA1Hash(fmt.Sprintf("%s:%s:%s", new.Aid, new.Adomain, new.Apassword))
+		newHash := utils.MakeA1Hash(fmt.Sprintf("%s:%s:%s", new.Aid, new.Adomain, new.Apassword))
 		q = fmt.Sprintf("%s account_a1hash='%s',", q, newHash)
 		new.Aa1hash = newHash
 	}
@@ -165,8 +167,7 @@ func ModifyAccount(old Account, new *Account) (e error) {
 	q = strings.TrimSuffix(q, ",")
 	q = fmt.Sprintf("%s where account_uuid='%s'", q, new.Auuid)
 	db.MustExec(q)
-	err = nil
-	return err
+	return nil
 }
 
 //DeleteAccount funcrtion.
