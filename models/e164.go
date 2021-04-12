@@ -56,7 +56,7 @@ func GetE164s(condition interface{}) (e164s []E164) {
 func IsExistE164Bynumber(new E164) (b bool, old E164) {
 	var is bool
 	e164 := E164{}
-	query := fmt.Sprintf("select * from cc_accounts where e164_number='%s' limit 1", new.Enumber)
+	query := fmt.Sprintf("select * from cc_e164s where e164_number='%s' limit 1", new.Enumber)
 	if err := db.Get(&e164, query); err != nil {
 		if err == sql.ErrNoRows {
 			is = false
@@ -130,7 +130,7 @@ func ModifyE164(old E164, new *E164) (e error) {
 	}
 	//remove ',' from tail.
 	query = strings.TrimSuffix(query, ",")
-	query = fmt.Sprintf("%s where account_uuid='%s'", query, new.Euuid)
+	query = fmt.Sprintf("%s where e164_uuid='%s'", query, new.Euuid)
 	db.MustExec(query)
 	return err
 }
