@@ -21,7 +21,7 @@ type FMhttpserver struct {
 type FMdatabase struct {
 	Type        string
 	Name        string
-	Address     string
+	Host        string
 	User        string
 	Password    string
 	Tableprefix string
@@ -74,7 +74,7 @@ func NewFmconfig() *FMconfig {
 		Database: FMdatabase{
 			Type:        "postgres",
 			Name:        "freeswitch",
-			Address:     "127.0.0.1:5432",
+			Host:        "127.0.0.1",
 			User:        "fsdba",
 			Password:    "fsdba",
 			Tableprefix: "",

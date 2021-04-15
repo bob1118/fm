@@ -6,13 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const Notfound = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="freeswitch/xml">
-	<section name="result">
-		<result status="not found"/>
-	</section>
-</document>`
-
 //PostFromXmlCurl function
 func PostFromXmlCurl(c *gin.Context) {
 

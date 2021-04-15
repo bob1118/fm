@@ -2,7 +2,6 @@ package fsapi
 
 import (
 	"github.com/gin-gonic/gin"
-	"githug.com/bob118/fm/routers/fsapi/configuration/odbc_cdr"
 )
 
 func doConfiguration(c *gin.Context) (b string) {
@@ -15,7 +14,7 @@ func doConfiguration(c *gin.Context) (b string) {
 	// case "enum.conf":
 	// case "xml_curl.conf":
 	case "odbc_cdr.conf": //1th request.
-		body = odbc_cdr.ReadConfiguration(c)
+		//body = odbc_cdr.ReadConfiguration(c)
 	case "sofia.conf": //2th request(a request per profile).
 	//case "loopback.conf": //3th
 	//case "verto.conf": //4th

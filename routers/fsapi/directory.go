@@ -1,7 +1,11 @@
 package fsapi
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
+	"githug.com/bob118/fm/config/fmconfig"
+	"githug.com/bob118/fm/models"
 	"githug.com/bob118/fm/utils"
 )
 
@@ -34,22 +38,23 @@ func doDirectory(c *gin.Context) (b string) {
 	body := Notfound
 
 	//useragent reg, subscribe invite.
-	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") {
-		method := c.PostForm("sip_auth_method")
-		switch method {
-		case "REGISTER", "SUBSCRIBE", "INVITE":
-			//do auth
-			useragentAuth()
-		}
+	if false ||
+		(utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") && utils.IsEqual(c.PostForm("sip_auth_method"), "REGISTER")) ||
+		(utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") && utils.IsEqual(c.PostForm("sip_auth_method"), "SUBSCRIBE")) ||
+		(utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") && utils.IsEqual(c.PostForm("sip_auth_method"), "INVITE")) ||
+		(utils.IsEqual(c.PostForm("Event-Name"), "GENERAL") && utils.IsEqual(c.PostForm("action"), "message-count")) { //voicemail need lookup a user id, response like auth.
+		ua := models.Account{}
+		ua.Aid = c.PostForm("user")
+		ua.Adomain = c.PostForm("domain")
+		body = useragentAuth(ua)
 	}
 
-	//reverse auth
+	//an endpoint requests reverse authentication for a request, using reverse-auth-lookup;
 	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "reverse-auth-lookup") {
-		useragentAuth()
-	}
-
-	//message-count.
-	if utils.IsEqual(c.PostForm("Event-Name"), "GENERAL") && utils.IsEqual(c.PostForm("action"), "message-count") {
+		ua := models.Account{}
+		ua.Aid = c.PostForm("user")
+		ua.Adomain = c.PostForm("domain")
+		body = useragentReverseAuth(ua)
 	}
 
 	//multi tenant, sofia profile internal rescan/restart.
@@ -59,7 +64,7 @@ func doDirectory(c *gin.Context) (b string) {
 	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "gateways") && utils.IsEqual(c.PostForm("profile"), "external") {
 	}
 
-	//
+	//switch_load_network_lists
 	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "network-list") {
 	}
 	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "publish-vm") {
@@ -67,4 +72,22 @@ func doDirectory(c *gin.Context) (b string) {
 	return body
 }
 
-func useragentAuth() {}
+func useragentAuth(u models.Account) (b string) {
+	body := Notfound
+	if isExist, ua := models.IsExistByiddomain(u); isExist {
+		if !fmconfig.CFG.Runtime.Enablehash {
+			body = fmt.Sprintf(Useragent, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Apassword)
+		} else {
+			body = fmt.Sprintf(UseragentA1hash, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Aa1hash)
+		}
+	}
+	return body
+}
+
+func useragentReverseAuth(u models.Account) (b string) {
+	body := Notfound
+	if isExist, ua := models.IsExistByiddomain(u); isExist {
+		body = fmt.Sprintf(UseragentReverse, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Aid, ua.Apassword)
+	}
+	return body
+}
