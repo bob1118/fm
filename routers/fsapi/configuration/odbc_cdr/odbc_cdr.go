@@ -1,6 +1,8 @@
 package odbc_cdr
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
 //freeswitch mod_odbc_cdr configuration.
 //default configuration is file odbc_cdr.conf.xml
@@ -24,7 +26,10 @@ import "github.com/gin-gonic/gin"
 func MakeDefaultConfiguration() {}
 
 //read configuration from db.
-func ReadConfiguration(c *gin.Context) (b string) { return "" }
+func ReadConfiguration(c *gin.Context) (e error, b string) {
+	var err error
+	return err, ""
+}
 
 //write configuration into db.
 func WriteConfiguration(s string) {}

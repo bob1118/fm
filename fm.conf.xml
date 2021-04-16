@@ -20,10 +20,11 @@
     <Enablehash>true</Enablehash>
   </Runtime>
   <Esl>
-    <Type>inbound</Type>
-    <Address>127.0.0.1:8021</Address>
+    <Mode>inbound</Mode>
+    <ServerAddr>:::8021</ServerAddr>
     <Password>ClueCon</Password>
     <Timeout>4000000000</Timeout>
     <Retries>0</Retries>
+    <ListenAddr>127.0.0.1:12345</ListenAddr>
   </Esl>
 </FMconfig>

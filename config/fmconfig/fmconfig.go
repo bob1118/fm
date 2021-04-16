@@ -37,11 +37,12 @@ type FMruntime struct {
 
 //FMesl struct {
 type FMesl struct {
-	Type     string
-	Address  string
-	Password string
-	Timeout  time.Duration
-	Retries  uint
+	Mode       string
+	ServerAddr string
+	Password   string
+	Timeout    time.Duration
+	Retries    uint
+	ListenAddr string
 }
 
 //FMconfig struct {
@@ -86,11 +87,12 @@ func NewFmconfig() *FMconfig {
 			Enablehash: true,
 		},
 		Esl: FMesl{
-			Type:     "inbound",
-			Address:  "127.0.0.1:8021",
-			Password: "ClueCon",
-			Timeout:  4 * time.Second,
-			Retries:  0,
+			Mode:       "inbound",
+			ServerAddr: ":::8021",
+			Password:   "ClueCon",
+			Timeout:    4 * time.Second,
+			Retries:    0,
+			ListenAddr: "127.0.0.1:12345",
 		},
 	}
 	return &c

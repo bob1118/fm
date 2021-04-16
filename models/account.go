@@ -170,8 +170,19 @@ func ModifyAccount(old Account, new *Account) (e error) {
 	return nil
 }
 
-//DeleteAccount funcrtion.
+//DeleteAccount function.
 func DeleteAccount(uuid string) {
 	q := fmt.Sprintf("delete from cc_accounts where account_uuid='%s'", uuid)
 	db.MustExec(q)
+}
+
+//DistinctAccountDomains function.
+func DistinctAccountDomains() (s []string, e error) {
+	var err error
+	var domains []string
+	q := "select distinct(account_domain) from cc_accounts"
+	if dberror := db.Select(&domains, q); dberror != nil {
+		err = dberror
+	}
+	return domains, err
 }

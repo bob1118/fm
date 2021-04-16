@@ -1,7 +1,22 @@
 package fsapi
 
-import "github.com/gin-gonic/gin"
+import (
+	"fmt"
 
+	"github.com/gin-gonic/gin"
+	"githug.com/bob118/fm/config/fmconfig"
+)
+
+//doDialplan function return xml dialplan.
 func doDialplan(c *gin.Context) (b string) {
-	return ""
+	body := NOT_FOUND
+	dpMode := fmconfig.CFG.Esl.Mode
+
+	switch dpMode {
+	case "inbound", "Inbound", "INBOUND":
+		body = DialplanInbound
+	case "outbound", "Outbound", "OUTBOUND":
+		body = fmt.Sprintf(DialplanOutbound, fmconfig.CFG.Esl.ListenAddr)
+	}
+	return body
 }

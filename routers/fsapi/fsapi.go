@@ -6,10 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-//PostFromXmlCurl function
+//PostFromXmlCurl function response all xml config.
 func PostFromXmlCurl(c *gin.Context) {
 
-	responseBody := Notfound
+	responseBody := NOT_FOUND
 	value := c.PostForm("section")
 	switch value {
 	case "configuration":
