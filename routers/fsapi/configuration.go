@@ -1,8 +1,8 @@
 package fsapi
 
 import (
-	"github.com/bob118/fm/routers/fsapi/configuration/odbc_cdr"
-	"github.com/bob118/fm/routers/fsapi/configuration/sofia"
+	"github.com/bob1118/fm/routers/fsapi/configuration/odbc_cdr"
+	"github.com/bob1118/fm/routers/fsapi/configuration/sofia"
 	"github.com/gin-gonic/gin"
 )
 

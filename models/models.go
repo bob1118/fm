@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/bob118/fm/config/fmconfig"
+	"github.com/bob1118/fm/config/fmconfig"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
 )

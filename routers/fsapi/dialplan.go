@@ -3,7 +3,7 @@ package fsapi
 import (
 	"fmt"
 
-	"github.com/bob118/fm/config/fmconfig"
+	"github.com/bob1118/fm/config/fmconfig"
 	"github.com/gin-gonic/gin"
 )
 

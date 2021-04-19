@@ -3,8 +3,8 @@ package sofia
 import (
 	"errors"
 
-	"github.com/bob118/fm/models"
-	"github.com/bob118/fm/utils"
+	"github.com/bob1118/fm/models"
+	"github.com/bob1118/fm/utils"
 	"github.com/gin-gonic/gin"
 )
 

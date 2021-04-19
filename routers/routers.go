@@ -1,9 +1,9 @@
 package routers
 
 import (
-	"github.com/bob118/fm/config/fmconfig"
-	v1 "github.com/bob118/fm/routers/api/v1"
-	"github.com/bob118/fm/routers/fsapi"
+	"github.com/bob1118/fm/config/fmconfig"
+	v1 "github.com/bob1118/fm/routers/api/v1"
+	"github.com/bob1118/fm/routers/fsapi"
 	"github.com/gin-gonic/gin"
 )
 
