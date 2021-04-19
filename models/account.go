@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strings"
 
-	"githug.com/bob118/fm/utils"
+	"github.com/bob118/fm/utils"
 )
 
 // -- public.cc_accounts definition

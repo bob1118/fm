@@ -3,9 +3,9 @@ package sofia
 import (
 	"errors"
 
+	"github.com/bob118/fm/models"
+	"github.com/bob118/fm/utils"
 	"github.com/gin-gonic/gin"
-	"githug.com/bob118/fm/models"
-	"githug.com/bob118/fm/utils"
 )
 
 //freeswitch mod_sofia configuration.

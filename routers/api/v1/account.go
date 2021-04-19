@@ -5,11 +5,11 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/bob118/fm/config/fmconfig"
+	"github.com/bob118/fm/ec"
+	"github.com/bob118/fm/models"
+	"github.com/bob118/fm/utils"
 	"github.com/gin-gonic/gin"
-	"githug.com/bob118/fm/config/fmconfig"
-	"githug.com/bob118/fm/ec"
-	"githug.com/bob118/fm/models"
-	"githug.com/bob118/fm/utils"
 )
 
 //GetAccounts function.
