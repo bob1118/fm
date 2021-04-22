@@ -92,6 +92,7 @@ func doConfiguration(c *gin.Context) (b string) {
 
 	//reloadxml
 	case "timezones.conf":
+		body = NOT_FOUND
 	default:
 		body = NOT_FOUND
 	}

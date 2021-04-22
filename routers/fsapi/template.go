@@ -8,8 +8,8 @@ const NOT_FOUND string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 	</section>
 </document>`
 
-//useragent
-const Useragent string = `<document type="freeswitch/xml" encoding="UTF-8">
+//USERAGENT
+const USERAGENT string = `<document type="freeswitch/xml" encoding="UTF-8">
 <section name="directory">
  <domain name="%s">
   <groups>
@@ -32,8 +32,8 @@ const Useragent string = `<document type="freeswitch/xml" encoding="UTF-8">
 </section>
 </document>`
 
-//UseragentA1hash
-const UseragentA1hash string = `<document type="freeswitch/xml" encoding="UTF-8">
+//USERAGENT_A1HASH
+const USERAGENT_A1HASH string = `<document type="freeswitch/xml" encoding="UTF-8">
 <section name="directory">
  <domain name="%s">
   <groups>
@@ -56,8 +56,8 @@ const UseragentA1hash string = `<document type="freeswitch/xml" encoding="UTF-8"
 </section>
 </document>`
 
-//UseragentReverse
-const UseragentReverse string = `<document type="freeswitch/xml" encoding="UTF-8">
+//USERAGENT_REVERSE
+const USERAGENT_REVERSE string = `<document type="freeswitch/xml" encoding="UTF-8">
 <section name="directory">
  <domain name="%s">
   <groups>

@@ -65,7 +65,7 @@ func doDirectory(c *gin.Context) (b string) {
 		}
 	}
 
-	//maybe /direcotry/default/example.com.xml
+	//
 	//if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "gateways") && utils.IsEqual(c.PostForm("profile"), "external") {
 	//}
 
@@ -82,9 +82,9 @@ func useragentAuth(u models.Account) (b string) {
 	body := NOT_FOUND
 	if isExist, ua := models.IsExistByiddomain(u); isExist {
 		if !fmconfig.CFG.Runtime.Enablehash {
-			body = fmt.Sprintf(Useragent, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Apassword)
+			body = fmt.Sprintf(USERAGENT, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Apassword)
 		} else {
-			body = fmt.Sprintf(UseragentA1hash, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Aa1hash)
+			body = fmt.Sprintf(USERAGENT_A1HASH, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Aa1hash)
 		}
 	}
 	return body
@@ -93,7 +93,7 @@ func useragentAuth(u models.Account) (b string) {
 func useragentReverseAuth(u models.Account) (b string) {
 	body := NOT_FOUND
 	if isExist, ua := models.IsExistByiddomain(u); isExist {
-		body = fmt.Sprintf(UseragentReverse, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Aid, ua.Apassword)
+		body = fmt.Sprintf(USERAGENT_REVERSE, ua.Adomain, ua.Agroup, ua.Aid, ua.Acacheable, ua.Aid, ua.Apassword)
 	}
 	return body
 }
