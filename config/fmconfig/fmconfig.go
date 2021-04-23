@@ -29,10 +29,11 @@ type FMdatabase struct {
 
 //FMruntime struct {
 type FMruntime struct {
-	Runmode    string
-	Jwtsecret  string
-	Pagesize   uint
-	Enablehash bool
+	Runmode       string
+	Jwtsecret     string
+	Pagesize      uint
+	Enablehash    bool
+	ConfDirectory string
 }
 
 //FMesl struct {
@@ -81,10 +82,11 @@ func NewFmconfig() *FMconfig {
 			Tableprefix: "",
 		},
 		Runtime: FMruntime{
-			Runmode:    "debug",
-			Jwtsecret:  "abcdefghijklmnopqrstuvwxyz",
-			Pagesize:   20,
-			Enablehash: true,
+			Runmode:       "debug",
+			Jwtsecret:     "abcdefghijklmnopqrstuvwxyz",
+			Pagesize:      20,
+			Enablehash:    true,
+			ConfDirectory: "/etc/freeswitch/",
 		},
 		Esl: FMesl{
 			Mode:       "inbound",

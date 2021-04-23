@@ -5,7 +5,6 @@ import (
 	"fmt"
 
 	"github.com/bob1118/fm/models"
-	"github.com/bob1118/fm/routers/fsapi"
 	"github.com/bob1118/fm/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -61,51 +60,51 @@ import (
 func MakeDefaultConfiguration() {}
 
 //read configuration from db.
-func ReadConfiguration(c *gin.Context) (e error, b string) {
+func ReadConfiguration(c *gin.Context) (b string, e error) {
+
 	var err error
-	var body string
+	body := SOFIA_NOTFOUND
 
 	event_call_function := c.PostForm("Event-Calling-Function")
 	switch event_call_function {
-	case "config_sofia":
+	case "config_sofia": //autoload/sofia.conf.xml
 	case "launch_sofia_worker_thread":
 		profile := c.PostForm("profile")
 		switch profile {
 		case "internal":
-			if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("reconfig"), "true") {
-			}
+			//if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("reconfig"), "true") {
+			//}
 		case "external":
 			if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") { //&& utils.IsEqual(c.PostForm("reconfig"), "true") {
 				if models.GetGatewaysCount(true) == 0 {
-					err = errors.New("sofia profile external gateway count return 0")
+					err = errors.New("sofia profile external GetGatewaysCount(true) return 0")
 				} else {
-					// var allgateway string
-					// gws := models.GetGateways(true)
-					// for _, gw := range gws {
-					// 	allgateway += fmt.Sprintf(GATEWAY,
-					// 		gw.Gname,
-					// 		gw.Gusername,
-					// 		gw.Grealm,
-					// 		gw.Gfromuser,
-					// 		gw.Gfromdomain,
-					// 		gw.Gpassword,
-					// 		gw.Gextension,
-					// 		gw.Gproxy,
-					// 		gw.Gregisterproxy,
-					// 		gw.Gexpire,
-					// 		gw.Gregister,
-					// 		gw.Gcalleridinfrom,
-					// 		gw.Gextensionincontact,
-					// 		gw.Goptionping)
-					// }
-					// body = fmt.Sprintf(GATEWAYS, allgateway)
-					body = fmt.Sprintf(fsapi.GATEWAY)
+					var allgateway string
+					gws := models.GetGateways(true)
+					for _, gw := range gws {
+						allgateway += fmt.Sprintf(GATEWAY,
+							gw.Gname,
+							gw.Gusername,
+							gw.Grealm,
+							gw.Gfromuser,
+							gw.Gfromdomain,
+							gw.Gpassword,
+							gw.Gextension,
+							gw.Gproxy,
+							gw.Gregisterproxy,
+							gw.Gexpire,
+							gw.Gregister,
+							gw.Gcalleridinfrom,
+							gw.Gextensionincontact,
+							gw.Goptionping)
+					}
+					body = fmt.Sprintf(GATEWAYS, allgateway)
 				}
 			}
 		}
 	}
 
-	return err, body
+	return body, err
 }
 
 //write configuration into db.

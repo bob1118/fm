@@ -26,9 +26,9 @@ import (
 func MakeDefaultConfiguration() {}
 
 //read configuration from db.
-func ReadConfiguration(c *gin.Context) (e error, b string) {
+func ReadConfiguration(c *gin.Context) (s string, e error) {
 	var err error
-	return err, ""
+	return "", err
 }
 
 //write configuration into db.

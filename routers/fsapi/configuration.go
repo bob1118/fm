@@ -1,8 +1,8 @@
 package fsapi
 
 import (
-	"github.com/bob1118/fm/routers/fsapi/configuration/odbc_cdr"
-	"github.com/bob1118/fm/routers/fsapi/configuration/sofia"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/odbc_cdr"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/sofia"
 	"github.com/gin-gonic/gin"
 )
 
@@ -62,11 +62,11 @@ func doConfiguration(c *gin.Context) (b string) {
 	// case "enum.conf":
 	// case "xml_curl.conf":
 	case "odbc_cdr.conf": //1th request.
-		if err, body = odbc_cdr.ReadConfiguration(c); err != nil {
+		if body, err = odbc_cdr.ReadConfiguration(c); err != nil {
 			body = NOT_FOUND
 		}
 	case "sofia.conf": //2th request(a request per profile).
-		if err, body = sofia.ReadConfiguration(c); err != nil {
+		if body, err = sofia.ReadConfiguration(c); err != nil {
 			body = NOT_FOUND
 		}
 	//case "loopback.conf": //3th

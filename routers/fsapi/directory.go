@@ -56,12 +56,18 @@ func doDirectory(c *gin.Context) (b string) {
 
 	//multi tenant, sofia profile internal rescan/restart.
 	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "gateways") && utils.IsEqual(c.PostForm("profile"), "internal") {
-		if domains, err := models.DistinctAccountDomains(); err == nil {
-			var alldomain string
-			for _, domain := range domains {
-				alldomain += fmt.Sprintf(DOMAIN, domain)
+		if models.GetAccountsCount(true) > 0 {
+			if domains, err := models.DistinctAccountDomains(); err != nil {
+				body = NOT_FOUND
+			} else {
+				var alldomain string
+				for _, domain := range domains {
+					alldomain += fmt.Sprintf(DOMAIN, domain)
+				}
+				body = fmt.Sprintf(DOMAINS, alldomain)
 			}
-			body = fmt.Sprintf(DOMAINS, alldomain)
+		} else {
+			body = NOT_FOUND
 		}
 	}
 

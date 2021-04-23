@@ -18,6 +18,7 @@
     <Jwtsecret>abcdefghijklmnopqrstuvwxyz</Jwtsecret>
     <Pagesize>20</Pagesize>
     <Enablehash>true</Enablehash>
+    <ConfDirectory>C:/Program Files/FreeSWITCH/conf/</ConfDirectory>
   </Runtime>
   <Esl>
     <Mode>inbound</Mode>
