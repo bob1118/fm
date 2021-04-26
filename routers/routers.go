@@ -37,6 +37,5 @@ func NewRouter() *gin.Engine {
 		apiv1.POST("/call/dial")
 		apiv1.POST("/call/dialout")
 	}
-
 	return r
 }

@@ -1,6 +1,8 @@
 package fsapi
 
 import (
+	"fmt"
+
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/odbc_cdr"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/sofia"
 	"github.com/gin-gonic/gin"
@@ -52,7 +54,7 @@ import (
 //doConfiguration function return xml config.
 func doConfiguration(c *gin.Context) (b string) {
 	var err error
-	var body string
+	body := NOT_FOUND
 
 	value := c.PostForm("key_value")
 	switch value {
@@ -62,8 +64,10 @@ func doConfiguration(c *gin.Context) (b string) {
 	// case "enum.conf":
 	// case "xml_curl.conf":
 	case "odbc_cdr.conf": //1th request.
-		if body, err = odbc_cdr.ReadConfiguration(c); err != nil {
+		if s, e := odbc_cdr.ReadConfiguration(); e != nil {
 			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, s)
 		}
 	case "sofia.conf": //2th request(a request per profile).
 		if body, err = sofia.ReadConfiguration(c); err != nil {
@@ -72,7 +76,7 @@ func doConfiguration(c *gin.Context) (b string) {
 	//case "loopback.conf": //3th
 	//case "verto.conf": //4th
 	case "conference.conf": //5th
-	//case "db.conf": //6th
+	case "db.conf": //6th
 	case "fifo.conf": //7th
 	case "hash.conf": //8th
 	case "voicemail.conf": //9th
@@ -96,6 +100,5 @@ func doConfiguration(c *gin.Context) (b string) {
 	default:
 		body = NOT_FOUND
 	}
-
 	return body
 }

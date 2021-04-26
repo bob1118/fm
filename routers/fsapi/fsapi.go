@@ -8,8 +8,7 @@ import (
 
 //PostFromXmlCurl function response all xml config.
 func PostFromXmlCurl(c *gin.Context) {
-
-	responseBody := NOT_FOUND
+	var responseBody string
 	value := c.PostForm("section")
 	switch value {
 	case "configuration":

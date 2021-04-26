@@ -95,6 +95,13 @@ const DOMAIN string = `    <domain name="%s">
     </domain>
 `
 
+// CONFIGURATION
+const CONFIGURATION string = `<document type="freeswitch/xml"  encoding="UTF-8">
+<section name="configuration">
+%s
+</section>
+</document>`
+
 //dialplan inbound.
 const DialplanInbound string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="freeswitch/xml">
@@ -108,7 +115,8 @@ const DialplanInbound string = `<?xml version="1.0" encoding="UTF-8" standalone=
       </extension>
     </context>
   </section>
-</document>`
+</document>
+`
 
 //dialplan outbound.
 const DialplanOutbound string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
@@ -122,4 +130,5 @@ const DialplanOutbound string = `<?xml version="1.0" encoding="UTF-8" standalone
       </extension>
     </context>
   </section>
-</document>`
+</document>
+`

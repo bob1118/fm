@@ -1,17 +1,7 @@
 package sofia
 
-//SOFIA_NOTFOUND
-var SOFIA_NOTFOUND string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="freeswitch/xml">
-	<section name="result">
-		<result status="not found"/>
-	</section>
-</document>`
-
-//gateways
-var GATEWAYS string = `<document type="freeswitch/xml">
-<section name="configuration">
- <configuration name="sofia.conf" description="sofia Endpoint">
+//GATEWAYS
+var GATEWAYS string = ` <configuration name="sofia.conf" description="sofia Endpoint">
   <global_settings>
   </global_settings>
   <profiles>
@@ -23,11 +13,9 @@ var GATEWAYS string = `<document type="freeswitch/xml">
   </settings>
   </profile>
   </profiles>
- </configuration>
-</section>
-</document>`
+ </configuration>`
 
-//gateway
+//GATEWAY
 var GATEWAY string = `  <gateway name="%s">
    <param name="username" value="%s"/>
    <param name="realm" value="%s"/>

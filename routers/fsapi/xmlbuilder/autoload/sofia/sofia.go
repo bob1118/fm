@@ -3,8 +3,10 @@ package sofia
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/bob1118/fm/models"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
 	"github.com/bob1118/fm/utils"
 	"github.com/gin-gonic/gin"
 )
@@ -56,18 +58,28 @@ import (
 //   </section>
 // </document>
 
-//read configuration from file, and then write into db.
+var defaultConfname, defaultConffile, defaultData string
+
+func init() {
+	defaultConfname = "sofia.conf.xml"
+	defaultConffile = xmlbuilder.GetDefaultDirectory() + `autoload_configs/` + defaultConfname
+}
+
+//MakeDefaultConfiguration.
 func MakeDefaultConfiguration() {}
 
-//read configuration from db.
+//ReadConfiguration from file.
 func ReadConfiguration(c *gin.Context) (b string, e error) {
-
 	var err error
-	body := SOFIA_NOTFOUND
 
 	event_call_function := c.PostForm("Event-Calling-Function")
 	switch event_call_function {
-	case "config_sofia": //autoload/sofia.conf.xml
+	case "config_sofia":
+		if data, e := os.ReadFile(defaultConfname); e != nil {
+			err = e
+		} else {
+			defaultData = string(data)
+		}
 	case "launch_sofia_worker_thread":
 		profile := c.PostForm("profile")
 		switch profile {
@@ -98,13 +110,13 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 							gw.Gextensionincontact,
 							gw.Goptionping)
 					}
-					body = fmt.Sprintf(GATEWAYS, allgateway)
+					defaultData = fmt.Sprintf(GATEWAYS, allgateway)
 				}
 			}
 		}
 	}
 
-	return body, err
+	return defaultData, err
 }
 
 //write configuration into db.
