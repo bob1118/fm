@@ -3,6 +3,7 @@ package xmlbuilder
 import (
 	"bytes"
 	"errors"
+	"fmt"
 	"os"
 	"runtime"
 	"strings"
@@ -41,6 +42,7 @@ func GetDefaultDirectory() (dir string) {
 	return defaultDirectory
 }
 
+//BuildPersonalConf build personal *.conf.xml files.
 func BuildPersonalConf() {
 	//./*.xml
 	makePersonalXml("freeswitch.xml")
@@ -62,21 +64,26 @@ func makePersonalXml(name string) (e error) {
 		var newvars []byte
 		filepath := defaultDirectory + "vars.xml"
 		defaultfilepath := defaultDirectory + "vars.xml.default"
-		if _, e := os.Stat(defaultfilepath); e != nil {
+		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
 			if vars, e := os.ReadFile(filepath); e != nil {
+				if os.IsNotExist(e) {
+					fmt.Println("vars.xml is missing ...")
+				}
 				err = e
 			} else {
 				os.WriteFile(defaultfilepath, vars, 0660)
 				// <X-PRE-PROCESS cmd="set" data="default_password=1234"/>
 				newvars = Update(vars, `  <X-PRE-PROCESS cmd="set" data="default_password=1234"/>`,
 					`  <X-PRE-PROCESS cmd="set" data="pg_handle=pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=fsdba password=fsdba"/>
-					  <X-PRE-PROCESS cmd="set" data="json_db_handle=$${pg_handle}"/>
-					  <X-PRE-PROCESS cmd="set" data="local_ip_v4=10.10.10.250"/>
-					  <X-PRE-PROCESS cmd="set" data="default_password=1234"/>`)
+  <X-PRE-PROCESS cmd="set" data="json_db_handle=$${pg_handle}"/>
+  <X-PRE-PROCESS cmd="set" data="local_ip_v4=10.10.10.250"/>
+  <X-PRE-PROCESS cmd="set" data="default_password=1234"/>`)
 				//  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=stun:stun.freeswitch.org"/>
-				newvars = Update(newvars, `  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=stun:stun.freeswitch.org"/>`, `  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=$${local_ip_v4}"/>`)
+				newvars = Update(newvars, `  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=stun:stun.freeswitch.org"/>`,
+					`  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=$${local_ip_v4}"/>`)
 				//  <X-PRE-PROCESS cmd="stun-set" data="external_rtp_ip=stun:stun.freeswitch.org"/>
-				newvars = Update(newvars, `  <X-PRE-PROCESS cmd="stun-set" data="external_rtp_ip=stun:stun.freeswitch.org"/>`, `  <X-PRE-PROCESS cmd="stun-set" data="external_rtp_ip=$${local_ip_v4}"/>`)
+				newvars = Update(newvars, `  <X-PRE-PROCESS cmd="stun-set" data="external_rtp_ip=stun:stun.freeswitch.org"/>`,
+					`  <X-PRE-PROCESS cmd="stun-set" data="external_rtp_ip=$${local_ip_v4}"/>`)
 				os.WriteFile(filepath, newvars, 0660)
 			}
 		}
@@ -84,7 +91,7 @@ func makePersonalXml(name string) (e error) {
 		var newmodules []byte
 		filepath := defaultDirectory + "autoload_configs/modules.conf.xml"
 		defaultfilepath := defaultDirectory + "autoload_configs/modules.conf.xml.default"
-		if _, e := os.Stat(defaultfilepath); e != nil {
+		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
 			if modules, e := os.ReadFile(filepath); e != nil {
 				err = e
 			} else {
@@ -94,7 +101,7 @@ func makePersonalXml(name string) (e error) {
 				//    <!-- <load module="mod_xml_curl"/> -->
 				newmodules = Update(newmodules, `    <!-- <load module="mod_xml_curl"/> -->`, `    <load module="mod_xml_curl"/>`)
 				//    <load module="mod_cdr_csv"/>
-				newmodules = Update(newmodules, `    <load module="mod_cdr_csv"/>`, `    <!--<load module="mod_cdr_csv"/>--!>\n    <load module="mod_odbc_cdr"/>`)
+				newmodules = Update(newmodules, `    <load module="mod_cdr_csv"/>`, `    <load module="mod_odbc_cdr"/>`)
 				//    <load module="mod_loopback"/>
 				newmodules = Update(newmodules, `    <load module="mod_loopback"/>`, `    <!--<load module="mod_loopback"/>-->`)
 				//    <load module="mod_rtc"/>
@@ -103,8 +110,6 @@ func makePersonalXml(name string) (e error) {
 				newmodules = Update(newmodules, `    <load module="mod_verto"/>`, `    <!--<load module="mod_verto"/>-->`)
 				//    <load module="mod_signalwire"/>
 				newmodules = Update(newmodules, `    <load module="mod_signalwire"/>`, `    <!--<load module="mod_signalwire"/>-->`)
-				//    <load module="mod_db"/>
-				//newmodules = Update(newmodules, `    <load module="mod_db"/>`, `    <!--<load module="mod_db"/>-->`)
 				//    <load module="mod_expr"/>
 				newmodules = Update(newmodules, `    <load module="mod_expr"/>`, `    <!--<load module="mod_expr"/>-->`)
 				//    <load module="mod_valet_parking"/>
@@ -128,13 +133,14 @@ func makePersonalXml(name string) (e error) {
 		var newxmlcurl []byte
 		filepath := defaultDirectory + "autoload_configs/xml_curl.conf.xml"
 		defaultfilepath := defaultDirectory + "autoload_configs/xml_curl.conf.xml.default"
-		if _, e := os.Stat(defaultfilepath); e != nil {
+		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
 			if xmlcurl, e := os.ReadFile(filepath); e != nil {
 				err = e
 			} else {
 				os.WriteFile(defaultfilepath, xmlcurl, 0660)
 				//      <!-- <param name="gateway-url" value="http://www.freeswitch.org/gateway.xml" bindings="dialplan"/> -->
-				newxmlcurl = Update(xmlcurl, `      <!-- <param name="gateway-url" value="http://www.freeswitch.org/gateway.xml" bindings="dialplan"/> -->`, `      <param name="gateway-url" value="http://$${local_ip_v4}/fsapi" bindings="dialplan|configuration|directory|phrases"/>`)
+				newxmlcurl = Update(xmlcurl, `<!-- <param name="gateway-url" value="http://www.freeswitch.org/gateway.xml" bindings="dialplan"/> -->`,
+					`<param name="gateway-url" value="http://$${local_ip_v4}/fsapi" bindings="dialplan|configuration|directory|phrases"/>`)
 				os.WriteFile(filepath, newxmlcurl, 0660)
 			}
 		}

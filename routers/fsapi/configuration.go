@@ -53,7 +53,6 @@ import (
 
 //doConfiguration function return xml config.
 func doConfiguration(c *gin.Context) (b string) {
-	var err error
 	body := NOT_FOUND
 
 	value := c.PostForm("key_value")
@@ -64,14 +63,16 @@ func doConfiguration(c *gin.Context) (b string) {
 	// case "enum.conf":
 	// case "xml_curl.conf":
 	case "odbc_cdr.conf": //1th request.
-		if s, e := odbc_cdr.ReadConfiguration(); e != nil {
+		if conf, e := odbc_cdr.ReadConfiguration(); e != nil {
 			body = NOT_FOUND
 		} else {
-			body = fmt.Sprintf(CONFIGURATION, s)
+			body = fmt.Sprintf(CONFIGURATION, conf)
 		}
 	case "sofia.conf": //2th request(a request per profile).
-		if body, err = sofia.ReadConfiguration(c); err != nil {
+		if conf, e := sofia.ReadConfiguration(c); e != nil {
 			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
 		}
 	//case "loopback.conf": //3th
 	//case "verto.conf": //4th

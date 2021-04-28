@@ -1,9 +1,11 @@
 package sofia
 
 import (
+	"bytes"
 	"errors"
 	"fmt"
 	"os"
+	"runtime"
 
 	"github.com/bob1118/fm/models"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
@@ -72,21 +74,31 @@ func MakeDefaultConfiguration() {}
 func ReadConfiguration(c *gin.Context) (b string, e error) {
 	var err error
 
-	event_call_function := c.PostForm("Event-Calling-Function")
-	switch event_call_function {
+	event_calling_function := c.PostForm("Event-Calling-Function")
+	switch event_calling_function {
 	case "config_sofia":
-		if data, e := os.ReadFile(defaultConfname); e != nil {
+		if data, e := os.ReadFile(defaultConffile); e != nil {
 			err = e
 		} else {
+			switch runtime.GOOS {
+			case "windows":
+				data = bytes.ReplaceAll(data, []byte(`<X-PRE-PROCESS cmd="include" data="../sip_profiles/*.xml"/>`), []byte(`<X-PRE-PROCESS cmd="include" data="C:/Program Files/FreeSWITCH/conf/sip_profiles/*.xml"/>`))
+			case "linux":
+				data = bytes.ReplaceAll(data, []byte(`<X-PRE-PROCESS cmd="include" data="../sip_profiles/*.xml"/>`), []byte(`<X-PRE-PROCESS cmd="include" data="/etc/freeswitch/sip_profiles/*.xml"/>`))
+			}
 			defaultData = string(data)
 		}
 	case "launch_sofia_worker_thread":
 		profile := c.PostForm("profile")
 		switch profile {
-		case "internal":
-			//if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("reconfig"), "true") {
-			//}
-		case "external":
+		case "internal": //./sip_profiles/internal.xml
+			defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/internal.xml"
+		//if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("reconfig"), "true") {
+		//}
+		case "internal-ipv6": //./sip_profiles/internal-ipv6.xml
+			defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/internal-ipv6.xml"
+		case "external": //./sip_profiles/external.xml
+			defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/external.xml"
 			if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") { //&& utils.IsEqual(c.PostForm("reconfig"), "true") {
 				if models.GetGatewaysCount(true) == 0 {
 					err = errors.New("sofia profile external GetGatewaysCount(true) return 0")
@@ -94,25 +106,15 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 					var allgateway string
 					gws := models.GetGateways(true)
 					for _, gw := range gws {
-						allgateway += fmt.Sprintf(GATEWAY,
-							gw.Gname,
-							gw.Gusername,
-							gw.Grealm,
-							gw.Gfromuser,
-							gw.Gfromdomain,
-							gw.Gpassword,
-							gw.Gextension,
-							gw.Gproxy,
-							gw.Gregisterproxy,
-							gw.Gexpire,
-							gw.Gregister,
-							gw.Gcalleridinfrom,
-							gw.Gextensionincontact,
-							gw.Goptionping)
+						allgateway += fmt.Sprintf(GATEWAY, gw.Gname, gw.Gusername, gw.Grealm, gw.Gfromuser, gw.Gfromdomain, gw.Gpassword, gw.Gextension, gw.Gproxy, gw.Gregisterproxy, gw.Gexpire, gw.Gregister, gw.Gcalleridinfrom, gw.Gextensionincontact, gw.Goptionping)
 					}
 					defaultData = fmt.Sprintf(GATEWAYS, allgateway)
 				}
 			}
+		case "external-ipv6": //./sip_profiles/external-ipv6.xml
+			defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/external-ipv6.xml"
+		default:
+			err = errors.New("profle unknown")
 		}
 	}
 

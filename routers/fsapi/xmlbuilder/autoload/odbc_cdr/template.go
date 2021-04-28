@@ -18,43 +18,43 @@ var ODBC_CDR string = `<configuration name="odbc_cdr.conf" description="ODBC CDR
 <tables>
   <!-- only a-legs will be inserted into this table -->
   <table name="cdr_table_a_leg" log-leg="a-leg">
-	<field name="CallId" chan-var-name="call_uuid"/>
-	<field name="orig_id" chan-var-name="uuid"/>
-	<field name="term_id" chan-var-name="sip_call_id"/>
-	<field name="ClientId" chan-var-name="uuid"/>
-	<field name="IP" chan-var-name="sip_network_ip"/>
-	<field name="IPInternal" chan-var-name="sip_via_host"/>
-	<field name="CODEC" chan-var-name="read_codec"/>
-	<field name="directGateway" chan-var-name="sip_req_host"/>
-	<field name="redirectGateway" chan-var-name="sip_redirect_contact_host_0"/>
-	<field name="CallerID" chan-var-name="sip_from_user"/>
-	<field name="TelNumber" chan-var-name="sip_req_user"/>
-	<field name="TelNumberFull" chan-var-name="sip_to_user"/>
-	<field name="sip_endpoint_disposition" chan-var-name="endpoint_disposition"/>
-	<field name="sip_current_application" chan-var-name="current_application"/>
+    <field name="CallId" chan-var-name="call_uuid"/>
+    <field name="orig_id" chan-var-name="uuid"/>
+    <field name="term_id" chan-var-name="sip_call_id"/>
+    <field name="ClientId" chan-var-name="uuid"/>
+    <field name="IP" chan-var-name="sip_network_ip"/>
+    <field name="IPInternal" chan-var-name="sip_via_host"/>
+    <field name="CODEC" chan-var-name="read_codec"/>
+    <field name="directGateway" chan-var-name="sip_req_host"/>
+    <field name="redirectGateway" chan-var-name="sip_redirect_contact_host_0"/>
+    <field name="CallerID" chan-var-name="sip_from_user"/>
+    <field name="TelNumber" chan-var-name="sip_req_user"/>
+    <field name="TelNumberFull" chan-var-name="sip_to_user"/>
+    <field name="sip_endpoint_disposition" chan-var-name="endpoint_disposition"/>
+    <field name="sip_current_application" chan-var-name="current_application"/>
   </table>
   <!-- only b-legs will be inserted into this table -->
   <table name="cdr_table_b_leg" log-leg="b-leg">
-	<field name="CallId" chan-var-name="call_uuid"/>
-	<field name="orig_id" chan-var-name="uuid"/>
-	<field name="term_id" chan-var-name="sip_call_id"/>
-	<field name="ClientId" chan-var-name="uuid"/>
-	<field name="IP" chan-var-name="sip_network_ip"/>
-	<field name="IPInternal" chan-var-name="sip_via_host"/>
-	<field name="CODEC" chan-var-name="read_codec"/>
-	<field name="directGateway" chan-var-name="sip_req_host"/>
-	<field name="redirectGateway" chan-var-name="sip_redirect_contact_host_0"/>
-	<field name="CallerID" chan-var-name="sip_from_user"/>
-	<field name="TelNumber" chan-var-name="sip_req_user"/>
-	<field name="TelNumberFull" chan-var-name="sip_to_user"/>
-	<field name="sip_endpoint_disposition" chan-var-name="endpoint_disposition"/>
-	<field name="sip_current_application" chan-var-name="current_application"/>
+    <field name="CallId" chan-var-name="call_uuid"/>
+    <field name="orig_id" chan-var-name="uuid"/>
+    <field name="term_id" chan-var-name="sip_call_id"/>
+    <field name="ClientId" chan-var-name="uuid"/>
+    <field name="IP" chan-var-name="sip_network_ip"/>
+    <field name="IPInternal" chan-var-name="sip_via_host"/>
+    <field name="CODEC" chan-var-name="read_codec"/>
+    <field name="directGateway" chan-var-name="sip_req_host"/>
+    <field name="redirectGateway" chan-var-name="sip_redirect_contact_host_0"/>
+    <field name="CallerID" chan-var-name="sip_from_user"/>
+    <field name="TelNumber" chan-var-name="sip_req_user"/>
+    <field name="TelNumberFull" chan-var-name="sip_to_user"/>
+    <field name="sip_endpoint_disposition" chan-var-name="endpoint_disposition"/>
+    <field name="sip_current_application" chan-var-name="current_application"/>
   </table>
   <!-- both legs will be inserted into this table -->
   <table name="cdr_table_both">
-	<field name="CallId" chan-var-name="uuid"/>
-	<field name="orig_id" chan-var-name="Caller-Unique-ID"/>
-	<field name="TEST_id" chan-var-name="sip_from_uri"/>
+    <field name="CallId" chan-var-name="uuid"/>
+    <field name="orig_id" chan-var-name="Caller-Unique-ID"/>
+    <field name="TEST_id" chan-var-name="sip_from_uri"/>
   </table>
 </tables>
 </configuration>

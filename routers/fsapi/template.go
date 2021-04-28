@@ -3,9 +3,9 @@ package fsapi
 //notfound
 const NOT_FOUND string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="freeswitch/xml">
-	<section name="result">
-		<result status="not found"/>
-	</section>
+  <section name="result">
+    <result status="not found"/>
+  </section>
 </document>`
 
 //USERAGENT
@@ -16,14 +16,14 @@ const USERAGENT string = `<document type="freeswitch/xml" encoding="UTF-8">
   <group name="%s">
    <users>
    <user id="%s"  cacheable="%s">
-	<params>
-	 <param name="password" value="%s"/>
-	 <param name="dial-string" value="{presence_id=${dialed_user}@${dialed_domain}}${sofia_contact(${dialed_user}@${dialed_domain})}"/>
-	</params>
-	<variables>
-	 <variable name="user_context" value="default"/>
-	 <variable name="record_stereo" value="true"/>
-	</variables>
+    <params>
+     <param name="password" value="%s"/>
+     <param name="dial-string" value="{presence_id=${dialed_user}@${dialed_domain}}${sofia_contact(${dialed_user}@${dialed_domain})}"/>
+    </params>
+    <variables>
+     <variable name="user_context" value="default"/>
+     <variable name="record_stereo" value="true"/>
+    </variables>
    </user>
    </users>
   </group>
@@ -40,14 +40,14 @@ const USERAGENT_A1HASH string = `<document type="freeswitch/xml" encoding="UTF-8
   <group name="%s">
    <users>
    <user id="%s"  cacheable="%s">
-	<params>
-	 <param name="a1-hash" value="%s"/>
-	 <param name="dial-string" value="{presence_id=${dialed_user}@${dialed_domain}}${sofia_contact(${dialed_user}@${dialed_domain})}"/>
-	</params>
-	<variables>
-	 <variable name="user_context" value="default"/>
-	 <variable name="record_stereo" value="true"/>
-	</variables>
+    <params>
+     <param name="a1-hash" value="%s"/>
+     <param name="dial-string" value="{presence_id=${dialed_user}@${dialed_domain}}${sofia_contact(${dialed_user}@${dialed_domain})}"/>
+    </params>
+    <variables>
+     <variable name="user_context" value="default"/>
+     <variable name="record_stereo" value="true"/>
+    </variables>
    </user>
    </users>
   </group>
@@ -64,10 +64,10 @@ const USERAGENT_REVERSE string = `<document type="freeswitch/xml" encoding="UTF-
   <group name="%s">
    <users>
    <user id="%s"  cacheable="%s">
-	<params>
-	 <param name="reverse-auth-user" value="%s"/>
-	 <param name="reverse-auth-pass" value="%s"/>
-	</params>
+    <params>
+     <param name="reverse-auth-user" value="%s"/>
+     <param name="reverse-auth-pass" value="%s"/>
+    </params>
    </user>
    </users>
   </group>
@@ -78,7 +78,7 @@ const USERAGENT_REVERSE string = `<document type="freeswitch/xml" encoding="UTF-
 
 //domains
 const DOMAINS string = `<document type="freeswitch/xml">
- <section name="directory">	
+ <section name="directory">    
   %s
  </section>
 </document>`

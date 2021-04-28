@@ -1,9 +1,10 @@
 package odbc_cdr
 
 import (
+	"bytes"
+	"fmt"
 	"os"
 	"runtime"
-	"strings"
 
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
 )
@@ -35,30 +36,31 @@ func init() {
 
 //MakeDefaultConfiguration.
 func MakeDefaultConfiguration() {
-	os.WriteFile(defaultConffile, []byte(ODBC_CDR), 0660)
+	if e := os.WriteFile(defaultConffile, []byte(ODBC_CDR), 0660); e != nil {
+		fmt.Println(e)
+	}
 }
 
 //ReadConfiguration from file.
 func ReadConfiguration() (s string, e error) {
 	var err error
-	if _, e := os.Stat(defaultConffile); e != nil {
-		if e != os.ErrNotExist {
-			err = e
-		} else {
-			MakeDefaultConfiguration()
-		}
+
+	if _, e := os.Stat(defaultConffile); os.IsNotExist(e) {
+		MakeDefaultConfiguration()
 	}
-	if data, e := os.ReadFile(defaultConffile); e == nil {
-		defaultData = string(data)
-		defaultData = strings.ReplaceAll(defaultData, `    <param name="odbc-dsn" value="pgsql://hostaddr=192.168.0.100 dbname=freeswitch user=freeswitch password='freeswitch' options='-c client_min_messages=NOTICE'"/>`, `    <param name="odbc-dsn" value="$${pg_handle}"/>`)
+	if data, e := os.ReadFile(defaultConffile); e != nil {
+		err = e
+	} else {
+		data = bytes.ReplaceAll(data, []byte(`<param name="odbc-dsn" value="pgsql://hostaddr=192.168.0.100 dbname=freeswitch user=freeswitch password='freeswitch' options='-c client_min_messages=NOTICE'"/>`), []byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
 		switch runtime.GOOS {
 		case "windows":
-			defaultData = strings.ReplaceAll(defaultData, `    <param name="csv-path" value="/usr/local/freeswitch/log/odbc_cdr"/>`, `    <param name="csv-path" value="C:/Program Files/FreeSWITCH/log/odbc_cdr"/>`)
-			defaultData = strings.ReplaceAll(defaultData, `    <param name="csv-path-on-fail" value="/usr/local/freeswitch/log/odbc_cdr/failed"/>`, `    <param name="csv-path-on-fail" value="C:/Program Files/FreeSWITCH/log/odbc_cdr/failed"/>`)
+			data = bytes.ReplaceAll(data, []byte(`<param name="csv-path" value="/usr/local/freeswitch/log/odbc_cdr"/>`), []byte(`<param name="csv-path" value="C:/Program Files/FreeSWITCH/log/odbc_cdr"/>`))
+			data = bytes.ReplaceAll(data, []byte(`<param name="csv-path-on-fail" value="/usr/local/freeswitch/log/odbc_cdr/failed"/>`), []byte(`<param name="csv-path-on-fail" value="C:/Program Files/FreeSWITCH/log/odbc_cdr/failed"/>`))
 		case "linux":
-			defaultData = strings.ReplaceAll(defaultData, `    <param name="csv-path" value="/usr/local/freeswitch/log/odbc_cdr"/>`, `    <param name="csv-path" value="/var/log/freeswitch/odbc_cdr"/>`)
-			defaultData = strings.ReplaceAll(defaultData, `    <param name="csv-path-on-fail" value="/usr/local/freeswitch/log/odbc_cdr/failed"/>`, `    <param name="csv-path-on-fail" value="/var/log/freeswitch/odbc_cdr/failed"/>`)
+			data = bytes.ReplaceAll(data, []byte(`<param name="csv-path" value="/usr/local/freeswitch/log/odbc_cdr"/>`), []byte(`<param name="csv-path" value="/var/log/freeswitch/odbc_cdr"/>`))
+			data = bytes.ReplaceAll(data, []byte(`<param name="csv-path-on-fail" value="/usr/local/freeswitch/log/odbc_cdr/failed"/>`), []byte(`<param name="csv-path-on-fail" value="/var/log/freeswitch/odbc_cdr/failed"/>`))
 		}
+		defaultData = string(data)
 	}
 	return defaultData, err
 }

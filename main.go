@@ -7,9 +7,13 @@ import (
 
 	"github.com/bob1118/fm/config/fmconfig"
 	"github.com/bob1118/fm/routers"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
 )
 
 func main() {
+
+	xmlbuilder.BuildPersonalConf()
+
 	//do http api gateway
 	go func() {
 		h := routers.NewRouter()
