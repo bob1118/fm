@@ -42,7 +42,7 @@ func GetDefaultDirectory() (dir string) {
 	return defaultDirectory
 }
 
-//BuildPersonalConf build personal *.conf.xml files.
+//BuildPersonalConf build personal *.conf.xml files, set origination *.conf.xml named *.conf.xml.default
 func BuildPersonalConf() {
 	//./*.xml
 	makePersonalXml("freeswitch.xml")
@@ -145,7 +145,7 @@ func makePersonalXml(name string) (e error) {
 			}
 		}
 	default:
-		err = errors.New("unsupport xml name")
+		err = errors.New(`unsupport xml name`)
 	}
 	return err
 }

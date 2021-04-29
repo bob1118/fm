@@ -78,7 +78,7 @@ const USERAGENT_REVERSE string = `<document type="freeswitch/xml" encoding="UTF-
 
 //domains
 const DOMAINS string = `<document type="freeswitch/xml">
- <section name="directory">    
+ <section name="directory">
   %s
  </section>
 </document>`

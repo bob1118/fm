@@ -1,21 +1,15 @@
 package sofia
 
-//GATEWAYS
-var GATEWAYS string = ` <configuration name="sofia.conf" description="sofia Endpoint">
-  <global_settings>
-  </global_settings>
-  <profiles>
-  <profile name="external">
-  <gateways>
-%s
-  </gateways>
-  <settings>
-  </settings>
-  </profile>
-  </profiles>
- </configuration>`
+//PROFILES
+var PROFILE string = `  <configuration name="sofia.conf" description="sofia Endpoint">
+    <global_settings>
+    </global_settings>
+    <profiles>
+    %s
+    </profiles>
+  </configuration>`
 
-//GATEWAY
+//GATEWAY, profiles->profile->gateways->gateway.
 var GATEWAY string = `  <gateway name="%s">
    <param name="username" value="%s"/>
    <param name="realm" value="%s"/>
@@ -37,4 +31,5 @@ var GATEWAY string = `  <gateway name="%s">
    <!--<param name="rfc-5626" value="true"/>-->
    <!--<param name="reg-id" value="1"/>-->
   </gateway>
-`
+  
+  `

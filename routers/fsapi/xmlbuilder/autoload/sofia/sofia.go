@@ -5,11 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"runtime"
 
 	"github.com/bob1118/fm/models"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
-	"github.com/bob1118/fm/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -62,10 +60,7 @@ import (
 
 var defaultConfname, defaultConffile, defaultData string
 
-func init() {
-	defaultConfname = "sofia.conf.xml"
-	defaultConffile = xmlbuilder.GetDefaultDirectory() + `autoload_configs/` + defaultConfname
-}
+func init() { defaultConfname = "sofia.conf.xml" }
 
 //MakeDefaultConfiguration.
 func MakeDefaultConfiguration() {}
@@ -77,45 +72,95 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 	event_calling_function := c.PostForm("Event-Calling-Function")
 	switch event_calling_function {
 	case "config_sofia":
+		defaultConffile = xmlbuilder.GetDefaultDirectory() + `autoload_configs/` + defaultConfname
 		if data, e := os.ReadFile(defaultConffile); e != nil {
 			err = e
 		} else {
-			switch runtime.GOOS {
-			case "windows":
-				data = bytes.ReplaceAll(data, []byte(`<X-PRE-PROCESS cmd="include" data="../sip_profiles/*.xml"/>`), []byte(`<X-PRE-PROCESS cmd="include" data="C:/Program Files/FreeSWITCH/conf/sip_profiles/*.xml"/>`))
-			case "linux":
-				data = bytes.ReplaceAll(data, []byte(`<X-PRE-PROCESS cmd="include" data="../sip_profiles/*.xml"/>`), []byte(`<X-PRE-PROCESS cmd="include" data="/etc/freeswitch/sip_profiles/*.xml"/>`))
-			}
+			data = bytes.ReplaceAll(data,
+				[]byte(`<X-PRE-PROCESS cmd="include" data="../sip_profiles/*.xml"/>`),
+				[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/*.xml"/>`))
 			defaultData = string(data)
 		}
 	case "launch_sofia_worker_thread":
 		profile := c.PostForm("profile")
 		switch profile {
 		case "internal": //./sip_profiles/internal.xml
-			defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/internal.xml"
-		//if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("reconfig"), "true") {
-		//}
+			defaultConffile = xmlbuilder.GetDefaultDirectory() + `sip_profiles/internal.xml`
+			if internal, e := os.ReadFile(defaultConffile); e != nil {
+				err = e
+			} else { //internal settings rewrite.
+				internal = bytes.ReplaceAll(internal,
+					[]byte(`<!--<param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password='' options='-c client_min_messages=NOTICE' application_name='freeswitch'" />-->`),
+					[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
+				internal = bytes.ReplaceAll(internal,
+					[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
+					[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
+				internal = bytes.ReplaceAll(internal,
+					[]byte(`<param name="force-subscription-domain" value="$${domain}"/>`),
+					[]byte(`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`))
+				internal = bytes.ReplaceAll(internal,
+					[]byte(`<param name="force-register-db-domain" value="$${domain}"/>`),
+					[]byte(`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`))
+				defaultData = fmt.Sprintf(PROFILE, string(internal))
+			}
 		case "internal-ipv6": //./sip_profiles/internal-ipv6.xml
 			defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/internal-ipv6.xml"
+			if internalipv6, e := os.ReadFile(defaultConffile); e != nil {
+				err = e
+			} else { //internal-ipv6 settings rewrite.
+				internalipv6 = bytes.ReplaceAll(internalipv6,
+					[]byte(`<!--<param name="odbc-dsn" value="dsn:user:pass"/>-->`),
+					[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
+				internalipv6 = bytes.ReplaceAll(internalipv6,
+					[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
+					[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
+				internalipv6 = bytes.ReplaceAll(internalipv6,
+					[]byte(`<param name="force-subscription-domain" value="$${domain}"/>`),
+					[]byte(`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`))
+				internalipv6 = bytes.ReplaceAll(internalipv6,
+					[]byte(`<param name="force-register-db-domain" value="$${domain}"/>`),
+					[]byte(`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`))
+				defaultData = fmt.Sprintf(PROFILE, string(internalipv6))
+			}
 		case "external": //./sip_profiles/external.xml
 			defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/external.xml"
-			if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") { //&& utils.IsEqual(c.PostForm("reconfig"), "true") {
-				if models.GetGatewaysCount(true) == 0 {
-					err = errors.New("sofia profile external GetGatewaysCount(true) return 0")
+			if external, e := os.ReadFile(defaultConffile); e != nil {
+				err = e
+			} else { //external settings rewrite.
+				if xmlGateways, count := buildXmlGateways(); count > 0 { //external <gateways>xmlGateways</gateways>
+					external = bytes.ReplaceAll(external, []byte(`<X-PRE-PROCESS cmd="include" data="external/*.xml"/>`), []byte(xmlGateways))
 				} else {
-					var allgateway string
-					gws := models.GetGateways(true)
-					for _, gw := range gws {
-						allgateway += fmt.Sprintf(GATEWAY, gw.Gname, gw.Gusername, gw.Grealm, gw.Gfromuser, gw.Gfromdomain, gw.Gpassword, gw.Gextension, gw.Gproxy, gw.Gregisterproxy, gw.Gexpire, gw.Gregister, gw.Gcalleridinfrom, gw.Gextensionincontact, gw.Goptionping)
-					}
-					defaultData = fmt.Sprintf(GATEWAYS, allgateway)
+					external = bytes.ReplaceAll(external,
+						[]byte(`<X-PRE-PROCESS cmd="include" data="external/*.xml"/>`),
+						[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/external/*.xml"/>`))
 				}
+				external = bytes.ReplaceAll(external,
+					[]byte(`<!-- ************************************************* -->`),
+					[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
+				defaultData = fmt.Sprintf(PROFILE, string(external))
 			}
 		case "external-ipv6": //./sip_profiles/external-ipv6.xml
 			defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/external-ipv6.xml"
+			if externalipv6, e := os.ReadFile(defaultConffile); e != nil {
+				err = e
+			} else { //external-ipv6 settings rewrite.
+				if xmlGateways, count := buildXmlGateways(); count > 0 { //external-ipv6 <gateways>xmlGateways</gateways>
+					externalipv6 = bytes.ReplaceAll(externalipv6, []byte(`<X-PRE-PROCESS cmd="include" data="external-ipv6/*.xml"/>`), []byte(xmlGateways))
+				} else {
+					externalipv6 = bytes.ReplaceAll(externalipv6,
+						[]byte(`<X-PRE-PROCESS cmd="include" data="external-ipv6/*.xml"/>`),
+						[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/external-ipv6/*.xml"/>`))
+				}
+				externalipv6 = bytes.ReplaceAll(externalipv6,
+					[]byte(`<!-- ************************************************* -->`),
+					[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
+				defaultData = fmt.Sprintf(PROFILE, string(externalipv6))
+			}
 		default:
-			err = errors.New("profle unknown")
+			err = errors.New(`sofia profle unknown`)
 		}
+	default:
+		err = errors.New("Event-Calling-Function unknows")
 	}
 
 	return defaultData, err
@@ -123,3 +168,16 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 
 //write configuration into db.
 func WriteConfiguration(s string) {}
+
+//buildXmlGateways
+func buildXmlGateways() (s string, c uint) {
+	var allgateway string
+	count := models.GetGatewaysCount("true")
+	if count > 0 {
+		mygateways := models.GetGateways("true")
+		for _, gw := range mygateways {
+			allgateway += fmt.Sprintf(GATEWAY, gw.Gname, gw.Gusername, gw.Grealm, gw.Gfromuser, gw.Gfromdomain, gw.Gpassword, gw.Gextension, gw.Gproxy, gw.Gregisterproxy, gw.Gexpire, gw.Gregister, gw.Gcalleridinfrom, gw.Gextensionincontact, gw.Goptionping)
+		}
+	}
+	return allgateway, count
+}

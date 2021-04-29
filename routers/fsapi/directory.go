@@ -56,7 +56,7 @@ func doDirectory(c *gin.Context) (b string) {
 
 	//multi tenant, sofia profile internal rescan/restart.
 	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "gateways") && utils.IsEqual(c.PostForm("profile"), "internal") {
-		if models.GetAccountsCount(true) > 0 {
+		if models.GetAccountsCount("true") > 0 {
 			if domains, err := models.DistinctAccountDomains(); err != nil {
 				body = NOT_FOUND
 			} else {
@@ -71,16 +71,20 @@ func doDirectory(c *gin.Context) (b string) {
 		}
 	}
 
-	//
-	//if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "gateways") && utils.IsEqual(c.PostForm("profile"), "external") {
-	//}
+	// user's gateways ?? like conf/direcotry/default/brian.xml or conf/direcotry/default/example.com.xml
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "gateways") && utils.IsEqual(c.PostForm("profile"), "external") {
+		body = NOT_FOUND
+	}
 
 	//switch_load_network_lists
-	//if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "network-list") {
-	//}
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "network-list") {
+		body = NOT_FOUND
+	}
 
-	//if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "publish-vm") {
-	//}
+	//voicemail ?
+	if utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("purpose"), "publish-vm") {
+		body = NOT_FOUND
+	}
 	return body
 }
 

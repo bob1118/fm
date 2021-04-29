@@ -56,7 +56,7 @@ type Gateway struct {
 }
 
 //GetGatewaysCount function.
-func GetGatewaysCount(condition interface{}) (count int) {
+func GetGatewaysCount(condition interface{}) (count uint) {
 	query := fmt.Sprintf("select count(1) from cc_gateways where %s", condition)
 	db.Get(&count, query)
 	return count
