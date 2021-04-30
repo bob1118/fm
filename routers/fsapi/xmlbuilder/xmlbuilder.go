@@ -18,7 +18,7 @@ func init() {
 }
 
 func SetDefaultDirectory(dir string) {
-	if len(dir) > 0 {
+	if _, e := os.Stat(dir); e == nil {
 		if strings.Contains(dir, `\`) {
 			dir = strings.ReplaceAll(dir, `\`, `/`)
 		}
@@ -44,12 +44,21 @@ func GetDefaultDirectory() (dir string) {
 
 //BuildPersonalConf build personal *.conf.xml files, set origination *.conf.xml named *.conf.xml.default
 func BuildPersonalConf() {
+
 	//./*.xml
 	makePersonalXml("freeswitch.xml")
 	makePersonalXml("vars.xml")
+
 	//./autoload_configs/*.xml
+	makePersonalXml("switch.conf.xml")
 	makePersonalXml("modules.conf.xml")
 	makePersonalXml("xml_curl.conf.xml")
+
+	//./sip_profiles/*.xml
+	makePersonalXml("internal.xml")
+	makePersonalXml("internal-ipv6.xml")
+	makePersonalXml("external.xml")
+	makePersonalXml("external-ipv6.xml")
 }
 
 func BuildDefaultConf() {}
@@ -60,7 +69,7 @@ func makePersonalXml(name string) (e error) {
 
 	switch name {
 	case "freeswitch.xml":
-	case "vars.xml":
+	case "vars.xml": //freeswitch global var define.
 		var newvars []byte
 		filepath := defaultDirectory + "vars.xml"
 		defaultfilepath := defaultDirectory + "vars.xml.default"
@@ -87,7 +96,23 @@ func makePersonalXml(name string) (e error) {
 				os.WriteFile(filepath, newvars, 0660)
 			}
 		}
-	case "modules.conf.xml":
+
+	case "switch.conf.xml": //freeswitch autoload switch.conf.xml
+		var newswitch []byte
+		filepath := defaultDirectory + "autoload_configs/switch.conf.xml"
+		defaultfilepath := defaultDirectory + "autoload_configs/switch.conf.xml.default"
+		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
+			if switch_main, e := os.ReadFile(filepath); e != nil {
+				err = e
+			} else {
+				os.WriteFile(defaultfilepath, switch_main, 0660)
+				newswitch = Update(switch_main,
+					`<!-- <param name="core-db-dsn" value="dsn:username:password" /> -->`,
+					`<param name="core-db-dsn" value="$${pg_handle}"/>`)
+				os.WriteFile(filepath, newswitch, 0600)
+			}
+		}
+	case "modules.conf.xml": //freeswitch autoload modules define.
 		var newmodules []byte
 		filepath := defaultDirectory + "autoload_configs/modules.conf.xml"
 		defaultfilepath := defaultDirectory + "autoload_configs/modules.conf.xml.default"
@@ -129,7 +154,7 @@ func makePersonalXml(name string) (e error) {
 				os.WriteFile(filepath, newmodules, 0660)
 			}
 		}
-	case "xml_curl.conf.xml":
+	case "xml_curl.conf.xml": //freeswitch dynamically control interface.
 		var newxmlcurl []byte
 		filepath := defaultDirectory + "autoload_configs/xml_curl.conf.xml"
 		defaultfilepath := defaultDirectory + "autoload_configs/xml_curl.conf.xml.default"
@@ -138,12 +163,79 @@ func makePersonalXml(name string) (e error) {
 				err = e
 			} else {
 				os.WriteFile(defaultfilepath, xmlcurl, 0660)
-				//      <!-- <param name="gateway-url" value="http://www.freeswitch.org/gateway.xml" bindings="dialplan"/> -->
-				newxmlcurl = Update(xmlcurl, `<!-- <param name="gateway-url" value="http://www.freeswitch.org/gateway.xml" bindings="dialplan"/> -->`,
+				//<!-- <param name="gateway-url" value="http://www.freeswitch.org/gateway.xml" bindings="dialplan"/> -->
+				newxmlcurl = Update(xmlcurl,
+					`<!-- <param name="gateway-url" value="http://www.freeswitch.org/gateway.xml" bindings="dialplan"/> -->`,
 					`<param name="gateway-url" value="http://$${local_ip_v4}/fsapi" bindings="dialplan|configuration|directory|phrases"/>`)
 				os.WriteFile(filepath, newxmlcurl, 0660)
 			}
 		}
+
+	case "internal.xml": //sip_profiles/internal.xml
+		var newdata []byte
+		filepath := defaultDirectory + "sip_profiles/internal.xml"
+		defaultfilepath := defaultDirectory + "sip_profiles/internal.xml.default"
+		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
+			if data, e := os.ReadFile(filepath); e != nil {
+				err = e
+			} else {
+				os.WriteFile(defaultfilepath, data, 0660)
+				//<!--<param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password='' options='-c client_min_messages=NOTICE' application_name='freeswitch'" />-->
+				newdata = Update(data,
+					`<!--<param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password='' options='-c client_min_messages=NOTICE' application_name='freeswitch'" />-->`,
+					`<param name="odbc-dsn" value="$${pg_handle}"/>`)
+				os.WriteFile(filepath, newdata, 0600)
+			}
+		}
+	case "internal-ipv6.xml": //sip_profiles/internal-ipv6.xml
+		var newdata []byte
+		filepath := defaultDirectory + "sip_profiles/internal-ipv6.xml"
+		defaultfilepath := defaultDirectory + "sip_profiles/internal-ipv6.xml.default"
+		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
+			if data, e := os.ReadFile(filepath); e != nil {
+				err = e
+			} else {
+				os.WriteFile(defaultfilepath, data, 0660)
+				//<!--<param name="odbc-dsn" value="dsn:user:pass"/>-->
+				newdata = Update(data,
+					`<!--<param name="odbc-dsn" value="dsn:user:pass"/>-->`,
+					`<param name="odbc-dsn" value="$${pg_handle}"/>`)
+				os.WriteFile(filepath, newdata, 0600)
+			}
+		}
+	case "external.xml": //sip_profiles/external.xml
+		var newdata []byte
+		filepath := defaultDirectory + "sip_profiles/external.xml"
+		defaultfilepath := defaultDirectory + "sip_profiles/external.xml.default"
+		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
+			if data, e := os.ReadFile(filepath); e != nil {
+				err = e
+			} else {
+				os.WriteFile(defaultfilepath, data, 0660)
+				//<!-- ************************************************* -->
+				newdata = Update(data,
+					`<!-- ************************************************* -->`,
+					`<param name="odbc-dsn" value="$${pg_handle}"/>`)
+				os.WriteFile(filepath, newdata, 0600)
+			}
+		}
+	case "external-ipv6.xml": //sip_profiles/external-ipv6.xml
+		var newdata []byte
+		filepath := defaultDirectory + "sip_profiles/external-ipv6.xml"
+		defaultfilepath := defaultDirectory + "sip_profiles/external-ipv6.xml.default"
+		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
+			if data, e := os.ReadFile(filepath); e != nil {
+				err = e
+			} else {
+				os.WriteFile(defaultfilepath, data, 0660)
+				//<!-- ************************************************* -->
+				newdata = Update(data,
+					`<!-- ************************************************* -->`,
+					`<param name="odbc-dsn" value="$${pg_handle}"/>`)
+				os.WriteFile(filepath, newdata, 0600)
+			}
+		}
+
 	default:
 		err = errors.New(`unsupport xml name`)
 	}
@@ -151,6 +243,5 @@ func makePersonalXml(name string) (e error) {
 }
 
 func Update(b []byte, p string, v string) (s []byte) {
-
 	return bytes.ReplaceAll(b, []byte(p), []byte(v))
 }

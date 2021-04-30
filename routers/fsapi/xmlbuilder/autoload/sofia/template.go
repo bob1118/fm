@@ -31,5 +31,4 @@ var GATEWAY string = `  <gateway name="%s">
    <!--<param name="rfc-5626" value="true"/>-->
    <!--<param name="reg-id" value="1"/>-->
   </gateway>
-  
   `

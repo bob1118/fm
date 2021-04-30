@@ -17,7 +17,7 @@
     <Runmode>debug</Runmode>
     <Jwtsecret>abcdefghijklmnopqrstuvwxyz</Jwtsecret>
     <Pagesize>20</Pagesize>
-    <Enablehash>true</Enablehash>
+    <Enablehash>false</Enablehash>
     <ConfDirectory>C:/Program Files/FreeSWITCH/conf/</ConfDirectory>
   </Runtime>
   <Esl>

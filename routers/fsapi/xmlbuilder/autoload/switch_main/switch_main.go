@@ -35,9 +35,11 @@ func ReadConfiguration() (s string, e error) {
 			[]byte(`<param name="loglevel" value="debug"/>`),
 			[]byte(`<param name="loglevel" value="info"/>`))
 		defaultData = string(data)
+		/* function BuildPersonalConf() set odbc_dsn before switch boot.
 		data = bytes.ReplaceAll(data,
 			[]byte(`<!-- <param name="core-db-dsn" value="dsn:username:password" /> -->`),
 			[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
+		*/
 		defaultData = string(data)
 	}
 	return defaultData, err

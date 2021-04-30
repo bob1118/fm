@@ -90,9 +90,6 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 				err = e
 			} else { //internal settings rewrite.
 				internal = bytes.ReplaceAll(internal,
-					[]byte(`<!--<param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password='' options='-c client_min_messages=NOTICE' application_name='freeswitch'" />-->`),
-					[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
-				internal = bytes.ReplaceAll(internal,
 					[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
 					[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
 				internal = bytes.ReplaceAll(internal,
@@ -108,9 +105,6 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 			if internalipv6, e := os.ReadFile(defaultConffile); e != nil {
 				err = e
 			} else { //internal-ipv6 settings rewrite.
-				internalipv6 = bytes.ReplaceAll(internalipv6,
-					[]byte(`<!--<param name="odbc-dsn" value="dsn:user:pass"/>-->`),
-					[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
 				internalipv6 = bytes.ReplaceAll(internalipv6,
 					[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
 					[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
@@ -134,9 +128,6 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 						[]byte(`<X-PRE-PROCESS cmd="include" data="external/*.xml"/>`),
 						[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/external/*.xml"/>`))
 				}
-				external = bytes.ReplaceAll(external,
-					[]byte(`<!-- ************************************************* -->`),
-					[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
 				defaultData = fmt.Sprintf(PROFILE, string(external))
 			}
 		case "external-ipv6": //./sip_profiles/external-ipv6.xml
@@ -151,9 +142,6 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 						[]byte(`<X-PRE-PROCESS cmd="include" data="external-ipv6/*.xml"/>`),
 						[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/external-ipv6/*.xml"/>`))
 				}
-				externalipv6 = bytes.ReplaceAll(externalipv6,
-					[]byte(`<!-- ************************************************* -->`),
-					[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
 				defaultData = fmt.Sprintf(PROFILE, string(externalipv6))
 			}
 		default:
