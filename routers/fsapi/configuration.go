@@ -3,8 +3,16 @@ package fsapi
 import (
 	"fmt"
 
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/acl"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/db"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/event_socket"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/fifo"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/local_stream"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/odbc_cdr"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/sofia"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/switch_main"
+	"github.com/bob1118/fm/routers/fsapi/xmlbuilder/autoload/voicemail"
 	"github.com/gin-gonic/gin"
 )
 
@@ -77,23 +85,88 @@ func doConfiguration(c *gin.Context) (b string) {
 	//case "loopback.conf": //3th
 	//case "verto.conf": //4th
 	case "conference.conf": //5th
+		if conf, e := autoload.ReadDefaultConfiguration("conference.conf.xml"); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "db.conf": //6th
+		if conf, e := db.ReadConfiguration(); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "fifo.conf": //7th
+		if conf, e := fifo.ReadConfiguration(); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "hash.conf": //8th
+		if conf, e := autoload.ReadDefaultConfiguration("hash.conf.xml"); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "voicemail.conf": //9th
+		if conf, e := voicemail.ReadConfiguration(); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	//case "httapi.conf": //10th
 	//case "spandsp.conf": //11th
 	case "opus.conf": //12th
+		if conf, e := autoload.ReadDefaultConfiguration("opus.conf.xml"); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "avformat.conf": //13th
+		if conf, e := autoload.ReadDefaultConfiguration("av.conf.xml"); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "avcodec.conf": //14th
+		if conf, e := autoload.ReadDefaultConfiguration("av.conf.xml"); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "sndfile.conf": //15th
+		if conf, e := autoload.ReadDefaultConfiguration("sndfile.conf.xml"); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "local_stream.conf": //16th
+		if conf, e := local_stream.ReadConfiguration(); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	//case "lua.conf": //17th
 	case "post_load_modules.conf": //18th
 	case "acl.conf": //19th
+		if conf, e := acl.ReadConfiguration(); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "event_socket.conf": //20th
+		if conf, e := event_socket.ReadConfiguration(); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 	case "post_load_switch.conf": //21th
 	case "switch.conf": //22th
+		if conf, e := switch_main.ReadConfiguration(); e != nil {
+			body = NOT_FOUND
+		} else {
+			body = fmt.Sprintf(CONFIGURATION, conf)
+		}
 
 	//reloadxml
 	case "timezones.conf":

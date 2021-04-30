@@ -1,6 +1,7 @@
-package autoload
+package acl
 
 import (
+	"bytes"
 	"os"
 
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
@@ -8,17 +9,17 @@ import (
 
 var defaultConfname, defaultConffile, defaultData string
 
-func init() {}
+func init() {
+	defaultConfname = "acl.conf.xml"
+	defaultConffile = xmlbuilder.GetDefaultDirectory() + `autoload_configs/` + defaultConfname
+}
 
 //MakeDefaultConfiguration.
 func MakeDefaultConfiguration() {}
 
-//ReadDefaultConfiguration from file.
-func ReadDefaultConfiguration(n string) (s string, e error) {
+//ReadConfiguration from file.
+func ReadConfiguration() (s string, e error) {
 	var err error
-
-	defaultConfname = n
-	defaultConffile = xmlbuilder.GetDefaultDirectory() + `autoload_configs/` + defaultConfname
 
 	if _, e := os.Stat(defaultConffile); os.IsNotExist(e) {
 		return defaultData, e
@@ -26,6 +27,9 @@ func ReadDefaultConfiguration(n string) (s string, e error) {
 	if data, e := os.ReadFile(defaultConffile); e != nil {
 		err = e
 	} else {
+		data = bytes.ReplaceAll(data,
+			[]byte(`todo...`),
+			[]byte(``))
 		defaultData = string(data)
 	}
 	return defaultData, err
