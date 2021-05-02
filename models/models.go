@@ -108,10 +108,43 @@ func pgsqlInitFreeswitchCDR(strcdr string) {
 }
 
 //pgsqlInitFreeswitchAccounts
-func pgsqlInitFreeswitchAccounts() {}
+func pgsqlInitFreeswitchAccounts() {
+	var err error
+	var isFound bool
+
+	if err = db.Get(&isFound, "select count(1)!=0 as isFound from pg_tables where tablename =$1", "cc_accounts"); err != nil {
+		log.Println(err.Error())
+	} else {
+		if !isFound {
+			db.MustExec(CC_ACCOUNTS)
+		}
+	}
+}
 
 //pgsqlInitFreeswitchGateways
-func pgsqlInitFreeswitchGateways() {}
+func pgsqlInitFreeswitchGateways() {
+	var err error
+	var isFound bool
+
+	if err = db.Get(&isFound, "select count(1)!=0 as isFound from pg_tables where tablename =$1", "cc_gateways"); err != nil {
+		log.Println(err.Error())
+	} else {
+		if !isFound {
+			db.MustExec(CC_GATEWAYS)
+		}
+	}
+}
 
 //pgsqlInitFreeswitchE164s
-func pgsqlInitFreeswitchE164s() {}
+func pgsqlInitFreeswitchE164s() {
+	var err error
+	var isFound bool
+
+	if err = db.Get(&isFound, "select count(1)!=0 as isFound from pg_tables where tablename =$1", "cc_e164s"); err != nil {
+		log.Println(err.Error())
+	} else {
+		if !isFound {
+			db.MustExec(CC_E164S)
+		}
+	}
+}
