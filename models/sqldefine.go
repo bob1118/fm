@@ -93,3 +93,43 @@ CREATE TABLE cc_e164s (
 	e164_lockout bool NULL DEFAULT false,
 	CONSTRAINT cc_e164s_pkey PRIMARY KEY (e164_uuid)
 )`
+
+const DEFAULT_ACCOUNTS = `
+insert into cc_accounts(account_id,account_name,account_auth,account_password,account_a1hash,account_group,account_domain,account_proxy,account_cacheable) values
+('8000','8000','8000','8000','','default','$${domain}','$${domain}',''),
+('8001','8001','8001','8001','','default','$${domain}','$${domain}',''),
+('8002','8002','8002','8002','','default','$${domain}','$${domain}',''),
+('8003','8003','8003','8003','','default','$${domain}','$${domain}',''),
+('8004','8004','8004','8004','','default','$${domain}','$${domain}',''),
+('8005','8005','8005','8005','','default','$${domain}','$${domain}',''),
+('8006','8006','8006','8006','','default','$${domain}','$${domain}',''),
+('8007','8007','8007','8007','','default','$${domain}','$${domain}',''),
+('8008','8008','8008','8008','','default','$${domain}','$${domain}',''),
+('8009','8009','8009','8009','','default','$${domain}','$${domain}',''),
+('8000','8000','8000','8000','','default','1.domain','10.10.10.250',''),
+('8001','8001','8001','8001','','default','1.domain','10.10.10.250',''),
+('8002','8002','8002','8002','','default','1.domain','10.10.10.250',''),
+('8003','8003','8003','8003','','default','1.domain','10.10.10.250',''),
+('8088','8088','8088','8088','','default','1.domain','10.10.10.250',''),
+('8000','8000','8000','8000','','default','2.domain','10.10.10.250',''),
+('8001','8001','8001','8001','','default','2.domain','10.10.10.250',''),
+('8002','8002','8002','8002','','default','2.domain','10.10.10.250',''),
+('8003','8003','8003','8003','','default','2.domain','10.10.10.250',''),
+('8088','8088','8088','8088','','default','2.domain','10.10.10.250','')
+`
+const DEFAULT_GATEWAYS = `
+insert into cc_gateways(gateway_name,gateway_username,gateway_realm,gateway_fromuser,gateway_fromdomain,gateway_password,gateway_extension,gateway_proxy,gateway_registerproxy,gateway_expire,gateway_register,gateway_calleridinfrom,gateway_extensionincontact,gateway_optionping) values
+('p2pgateway.com','','','','','','','','','','false','true','',''),
+('p2pgatewayname','','p2pgateway.com','','','','','','','','false','true','',''),
+('myfsgateway','1000','10.10.10.200','','','1234','','','','','true','true','true',''),
+('vos_inbound','username','1.1.1.1','','','password','','','','','true','true','true',''),
+('vos_outbound','username','1.1.1.1','','','password','','','','','true','true','true','')
+`
+const DEFAULT_E164S = `
+insert into cc_e164s (e164_number)values
+('8001234567'),
+('4001234567'),
+('01012345678'),
+('02012345678'),
+('03012345678')
+`

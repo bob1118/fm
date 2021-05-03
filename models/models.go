@@ -41,7 +41,8 @@ func InitFreeswitch(strcon string) {
 	pgsqlInitFreeswitchCDR(strcdr)
 
 	//freeswitch tables.
-	s := fmt.Sprintf("user=%s password=%s host=%s dbname=%s sslmode=disable", fmconfig.CFG.Database.User, fmconfig.CFG.Database.Password, fmconfig.CFG.Database.Host, fmconfig.CFG.Database.Name)
+	s := fmt.Sprintf("user=%s password=%s host=%s dbname=%s sslmode=disable",
+		fmconfig.CFG.Database.User, fmconfig.CFG.Database.Password, fmconfig.CFG.Database.Host, fmconfig.CFG.Database.Name)
 	if db, err = openPgsql(s); err != nil {
 		pgsqlInitFreeswitchAccounts()
 		pgsqlInitFreeswitchGateways()
@@ -117,6 +118,7 @@ func pgsqlInitFreeswitchAccounts() {
 	} else {
 		if !isFound {
 			db.MustExec(CC_ACCOUNTS)
+			db.MustExec(DEFAULT_ACCOUNTS)
 		}
 	}
 }
@@ -131,6 +133,7 @@ func pgsqlInitFreeswitchGateways() {
 	} else {
 		if !isFound {
 			db.MustExec(CC_GATEWAYS)
+			db.MustExec(DEFAULT_GATEWAYS)
 		}
 	}
 }
@@ -145,6 +148,7 @@ func pgsqlInitFreeswitchE164s() {
 	} else {
 		if !isFound {
 			db.MustExec(CC_E164S)
+			db.MustExec(DEFAULT_E164S)
 		}
 	}
 }
