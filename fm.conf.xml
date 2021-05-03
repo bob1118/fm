@@ -8,7 +8,7 @@
   <Database>
     <Type>postgres</Type>
     <Name>freeswitch</Name>
-    <Address>127.0.0.1:5432</Address>
+    <Address>127.0.0.1</Address>
     <User>fsdba</User>
     <Password>fsdba</Password>
     <Tableprefix></Tableprefix>

@@ -8,6 +8,7 @@ import (
 
 	"github.com/bob1118/fm/models"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
+	"github.com/bob1118/fm/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -72,14 +73,85 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 	event_calling_function := c.PostForm("Event-Calling-Function")
 	switch event_calling_function {
 	case "config_sofia":
-		defaultConffile = xmlbuilder.GetDefaultDirectory() + `autoload_configs/` + defaultConfname
-		if data, e := os.ReadFile(defaultConffile); e != nil {
-			err = e
-		} else {
-			data = bytes.ReplaceAll(data,
-				[]byte(`<X-PRE-PROCESS cmd="include" data="../sip_profiles/*.xml"/>`),
-				[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/*.xml"/>`))
-			defaultData = string(data)
+		profile := c.PostForm("profile")
+		reconfig := c.PostForm("reconfig")
+		switch profile {
+		case "": //call config_sofia, while freeswitch load mod_sofia.
+			defaultConffile = xmlbuilder.GetDefaultDirectory() + `autoload_configs/` + defaultConfname
+			if data, e := os.ReadFile(defaultConffile); e != nil {
+				err = e
+			} else {
+				data = bytes.ReplaceAll(data,
+					[]byte(`<X-PRE-PROCESS cmd="include" data="../sip_profiles/*.xml"/>`),
+					[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/*.xml"/>`))
+				defaultData = string(data)
+			}
+		case "internal":
+			if utils.IsEqual(reconfig, "true") { //profile internal reconfig
+				defaultConffile = xmlbuilder.GetDefaultDirectory() + `sip_profiles/internal.xml`
+				if internal, e := os.ReadFile(defaultConffile); e != nil {
+					err = e
+				} else { //internal settings rewrite.
+					internal = bytes.ReplaceAll(internal,
+						[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
+						[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
+					internal = bytes.ReplaceAll(internal,
+						[]byte(`<param name="force-subscription-domain" value="$${domain}"/>`),
+						[]byte(`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`))
+					internal = bytes.ReplaceAll(internal,
+						[]byte(`<param name="force-register-db-domain" value="$${domain}"/>`),
+						[]byte(`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`))
+					defaultData = fmt.Sprintf(PROFILE, string(internal))
+				}
+			}
+		case "internal-ipv6":
+			if utils.IsEqual(reconfig, "true") { //profile internal-ipv6 reconfig
+				defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/internal-ipv6.xml"
+				if internalipv6, e := os.ReadFile(defaultConffile); e != nil {
+					err = e
+				} else { //internal-ipv6 settings rewrite.
+					internalipv6 = bytes.ReplaceAll(internalipv6,
+						[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
+						[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
+					internalipv6 = bytes.ReplaceAll(internalipv6,
+						[]byte(`<param name="force-subscription-domain" value="$${domain}"/>`),
+						[]byte(`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`))
+					internalipv6 = bytes.ReplaceAll(internalipv6,
+						[]byte(`<param name="force-register-db-domain" value="$${domain}"/>`),
+						[]byte(`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`))
+					defaultData = fmt.Sprintf(PROFILE, string(internalipv6))
+				}
+			}
+		case "external":
+			if utils.IsEqual(reconfig, "true") { //profile external reconfig
+				defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/external.xml"
+				if external, e := os.ReadFile(defaultConffile); e != nil {
+					err = e
+				} else { //external settings rewrite.
+					if xmlGateways, count := buildXmlGateways(); count > 0 { //external <gateways>xmlGateways</gateways>
+						external = bytes.ReplaceAll(external, []byte(`    <X-PRE-PROCESS cmd="include" data="external/*.xml"/>`), []byte(xmlGateways))
+					} else {
+						external = bytes.ReplaceAll(external,
+							[]byte(`<X-PRE-PROCESS cmd="include" data="external/*.xml"/>`),
+							[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/external/*.xml"/>`))
+					}
+					defaultData = fmt.Sprintf(PROFILE, string(external))
+				}
+			}
+		case "external-ipv6":
+			if utils.IsEqual(reconfig, "true") { //profile external-ipv6 reconfig
+				defaultConffile = xmlbuilder.GetDefaultDirectory() + "sip_profiles/external-ipv6.xml"
+				if externalipv6, e := os.ReadFile(defaultConffile); e != nil {
+					err = e
+				} else { //external-ipv6 settings rewrite.
+					externalipv6 = bytes.ReplaceAll(externalipv6,
+						[]byte(`<X-PRE-PROCESS cmd="include" data="external-ipv6/*.xml"/>`),
+						[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/external-ipv6/*.xml"/>`))
+					defaultData = fmt.Sprintf(PROFILE, string(externalipv6))
+				}
+			}
+		default:
+			err = errors.New("Event-Calling-Function:config_sofia unknow profile ")
 		}
 	case "launch_sofia_worker_thread":
 		profile := c.PostForm("profile")
@@ -122,7 +194,7 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 				err = e
 			} else { //external settings rewrite.
 				if xmlGateways, count := buildXmlGateways(); count > 0 { //external <gateways>xmlGateways</gateways>
-					external = bytes.ReplaceAll(external, []byte(`<X-PRE-PROCESS cmd="include" data="external/*.xml"/>`), []byte(xmlGateways))
+					external = bytes.ReplaceAll(external, []byte(`    <X-PRE-PROCESS cmd="include" data="external/*.xml"/>`), []byte(xmlGateways))
 				} else {
 					external = bytes.ReplaceAll(external,
 						[]byte(`<X-PRE-PROCESS cmd="include" data="external/*.xml"/>`),
@@ -135,13 +207,9 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 			if externalipv6, e := os.ReadFile(defaultConffile); e != nil {
 				err = e
 			} else { //external-ipv6 settings rewrite.
-				if xmlGateways, count := buildXmlGateways(); count > 0 { //external-ipv6 <gateways>xmlGateways</gateways>
-					externalipv6 = bytes.ReplaceAll(externalipv6, []byte(`<X-PRE-PROCESS cmd="include" data="external-ipv6/*.xml"/>`), []byte(xmlGateways))
-				} else {
-					externalipv6 = bytes.ReplaceAll(externalipv6,
-						[]byte(`<X-PRE-PROCESS cmd="include" data="external-ipv6/*.xml"/>`),
-						[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/external-ipv6/*.xml"/>`))
-				}
+				externalipv6 = bytes.ReplaceAll(externalipv6,
+					[]byte(`<X-PRE-PROCESS cmd="include" data="external-ipv6/*.xml"/>`),
+					[]byte(`<X-PRE-PROCESS cmd="include" data="./sip_profiles/external-ipv6/*.xml"/>`))
 				defaultData = fmt.Sprintf(PROFILE, string(externalipv6))
 			}
 		default:

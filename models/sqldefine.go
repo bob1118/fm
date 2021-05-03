@@ -3,7 +3,9 @@ package models
 const USER_CREATE = "create user fsdba with password 'fsdba'"
 const DB_CREATE = "create database freeswitch with owner fsdba"
 const DBUSER_AUTH = "grant all privileges on database freeswitch to fsdba"
+const DROP_DATABASE_USER = `drop database if exists freeswitch; drop user if exists fsdba;`
 
+//CREATE TABLE if not exists table_name(...)
 const CDR_ALEG = `
 CREATE TABLE cdr_table_a_leg (
 	id serial NOT NULL,
@@ -121,7 +123,7 @@ const DEFAULT_GATEWAYS = `
 insert into cc_gateways(gateway_name,gateway_username,gateway_realm,gateway_fromuser,gateway_fromdomain,gateway_password,gateway_extension,gateway_proxy,gateway_registerproxy,gateway_expire,gateway_register,gateway_calleridinfrom,gateway_extensionincontact,gateway_optionping) values
 ('p2pgateway.com','','','','','','','','','','false','true','',''),
 ('p2pgatewayname','','p2pgateway.com','','','','','','','','false','true','',''),
-('myfsgateway','1000','10.10.10.200','','','1234','','','','','true','true','true',''),
+('myfsgateway','1000','10.10.10.200','1000','10.10.10.200','1234','1000','10.10.10.200','10.10.10.200','3600','true','true','true',''),
 ('vos_inbound','username','1.1.1.1','','','password','','','','','true','true','true',''),
 ('vos_outbound','username','1.1.1.1','','','password','','','','','true','true','true','')
 `
