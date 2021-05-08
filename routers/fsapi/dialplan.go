@@ -14,9 +14,9 @@ func doDialplan(c *gin.Context) (b string) {
 
 	switch dpMode {
 	case "inbound", "Inbound", "INBOUND":
-		body = DialplanInbound
+		body = DialplanFreeswitchInbound
 	case "outbound", "Outbound", "OUTBOUND":
-		body = fmt.Sprintf(DialplanOutbound, fmconfig.CFG.Esl.ListenAddr)
+		body = fmt.Sprintf(DialplanFreeswitchOutbound, fmconfig.CFG.Esl.ListenAddr)
 	}
 	return body
 }

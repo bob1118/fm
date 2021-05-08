@@ -103,11 +103,11 @@ const CONFIGURATION string = `<document type="freeswitch/xml"  encoding="UTF-8">
 </document>`
 
 //dialplan inbound.
-const DialplanInbound string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+const DialplanFreeswitchInbound string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="freeswitch/xml">
   <section name="dialplan" description="dialplan inbound for FreeSwitch">
     <context name="default">
-      <extension name="inbound">
+      <extension name="default">
         <condition>
           <action application="set" data="continue_on_fail=true"/>
           <action application="park"/>
@@ -119,11 +119,11 @@ const DialplanInbound string = `<?xml version="1.0" encoding="UTF-8" standalone=
 `
 
 //dialplan outbound.
-const DialplanOutbound string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+const DialplanFreeswitchOutbound string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="freeswitch/xml">
   <section name="dialplan" description="dialplan outbound FreeSwitch">
     <context name="default">
-      <extension name="outbound">
+      <extension name="default">
         <condition>
           <action application="socket" data="%s async full"/>
         </condition>

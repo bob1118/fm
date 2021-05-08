@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/bob1118/fm/config/fmconfig"
+	"github.com/bob1118/fm/esl"
 	"github.com/bob1118/fm/routers"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
 )
@@ -28,12 +29,10 @@ func main() {
 	}()
 
 	//do freeswitch eventsocket msg analyze.
-	go func() {
-		//
-	}()
+	go esl.Run()
 
 	//do licence check every 1second.
-	for now := range time.Tick(10 * time.Second) {
+	for now := range time.Tick(1 * time.Second) {
 		fmt.Println(now)
 	}
 }

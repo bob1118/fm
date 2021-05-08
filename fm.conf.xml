@@ -22,7 +22,7 @@
   </Runtime>
   <Esl>
     <Mode>inbound</Mode>
-    <ServerAddr>:::8021</ServerAddr>
+    <ServerAddr>[::]:8021</ServerAddr>
     <Password>ClueCon</Password>
     <Timeout>4000000000</Timeout>
     <Retries>0</Retries>

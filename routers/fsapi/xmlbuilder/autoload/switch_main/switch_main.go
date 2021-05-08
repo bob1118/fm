@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 
+	"github.com/bob1118/fm/esl/eslclient"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
 )
 
@@ -35,12 +36,15 @@ func ReadConfiguration() (s string, e error) {
 			[]byte(`<param name="loglevel" value="debug"/>`),
 			[]byte(`<param name="loglevel" value="info"/>`))
 		defaultData = string(data)
-		/* function BuildPersonalConf() set odbc_dsn before switch boot.
+		/* function BuildPersonalConf() set core-db-dsn before switch boot.
 		data = bytes.ReplaceAll(data,
 			[]byte(`<!-- <param name="core-db-dsn" value="dsn:username:password" /> -->`),
-			[]byte(`<param name="odbc-dsn" value="$${pg_handle}"/>`))
+			[]byte(`<param name="core-db-dsn" value="$${pg_handle}"/>`))
 		*/
 		defaultData = string(data)
 	}
+	go func() {
+		eslclient.CHfsisrun <- true
+	}()
 	return defaultData, err
 }

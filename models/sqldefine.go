@@ -124,8 +124,8 @@ insert into cc_gateways(gateway_name,gateway_username,gateway_realm,gateway_from
 ('p2pgateway.com','','','','','','','','','','false','true','',''),
 ('p2pgatewayname','','p2pgateway.com','','','','','','','','false','true','',''),
 ('myfsgateway','1000','10.10.10.200','1000','10.10.10.200','1234','1000','10.10.10.200','10.10.10.200','3600','true','true','true',''),
-('vos_inbound','username','1.1.1.1','','','password','','','','','true','true','true',''),
-('vos_outbound','username','1.1.1.1','','','password','','','','','true','true','true','')
+('vos_inbound','username','1.1.1.1','','','password','','','','','false','true','true',''),
+('vos_outbound','username','1.1.1.1','','','password','','','','','false','true','true','')
 `
 const DEFAULT_E164S = `
 insert into cc_e164s (e164_number)values
