@@ -29,7 +29,8 @@ func main() {
 	}()
 
 	//do freeswitch eventsocket msg analyze.
-	go esl.Run()
+	go esl.Run("inbound")
+	go esl.Run("outbound")
 
 	//do licence check every 1second.
 	for now := range time.Tick(1 * time.Second) {

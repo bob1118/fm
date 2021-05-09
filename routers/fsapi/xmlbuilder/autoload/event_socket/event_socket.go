@@ -42,5 +42,9 @@ func ReadConfiguration() (s string, e error) {
 
 		defaultData = string(data)
 	}
+	//
+	// go func() {
+	// 	eslclient.CHfsisrun <- true
+	// }()
 	return defaultData, err
 }

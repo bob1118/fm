@@ -1,10 +1,12 @@
 package eslclient
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"log"
 	"strings"
+	"syscall"
 	"time"
 
 	"github.com/bob1118/fm/config/fmconfig"
@@ -19,36 +21,38 @@ func init() { CHfsisrun = make(chan bool) }
 
 //clientRun
 func ClientRun() {
-	if fsisrun, ok := <-CHfsisrun; ok {
-		if fsisrun {
-			if err := clientReconnect(); err != nil {
-				log.Println(err)
-			}
-		}
+	if err := clientReconnect(); err != nil {
+		log.Println(err)
 	}
 }
 
 //clientReconnect
 func clientReconnect() error {
-	var e error
+	//var e error
+	//	if isrun, ok := <-CHfsisrun; ok {
+	//		if isrun {
+	log.Println(time.Now(), "->start reconnect.")
 	c, err := eventsocket.Dial(fmconfig.CFG.Esl.ServerAddr, fmconfig.CFG.Esl.Password)
 	if err != nil {
-		e = err
 		log.Println(err)
 	} else {
 		ClientCon = c
 		if eventSubscribe("plain") {
 			//&& eventUnsubscribe("plain", "RE_SCHEDULE", "HEARTBEAT", "MESSAGE_WAITING", "MESSAGE_QUERY") {
 			if err := eventReadLoop(); err != nil {
-				if err == io.EOF {
-					<-time.After(8 * time.Second)
-					return clientReconnect()
+				if errors.Is(err, io.EOF) {
+					log.Println(time.Now(), err)
 				}
-				e = err
+				if errors.Is(err, syscall.WSAECONNRESET) {
+					log.Println(time.Now(), err)
+				}
 			}
 		}
 	}
-	return e
+	//		}
+	//	}
+	<-time.After(8 * time.Second)
+	return clientReconnect()
 }
 
 //EventLoop function.
@@ -56,7 +60,6 @@ func eventReadLoop() error {
 	isLoop := true
 	for isLoop {
 		if e, err := ClientCon.ReadEvent(); err != nil {
-			log.Println(err)
 			return err
 		} else {
 			eventAction(e)
