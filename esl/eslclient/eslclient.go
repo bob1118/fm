@@ -34,16 +34,21 @@ func clientReconnect() error {
 	log.Println(time.Now(), "->start reconnect.")
 	c, err := eventsocket.Dial(fmconfig.CFG.Esl.ServerAddr, fmconfig.CFG.Esl.Password)
 	if err != nil {
-		log.Println(err)
+		if errors.Is(err, syscall.WSAECONNRESET+7) { //syscall.Errno=10061 (No connection could be made because the target machine actively refused it)
+			log.Println(time.Now(), err)
+		}
 	} else {
 		ClientCon = c
-		if eventSubscribe("plain") {
-			//&& eventUnsubscribe("plain", "RE_SCHEDULE", "HEARTBEAT", "MESSAGE_WAITING", "MESSAGE_QUERY") {
+		if eventSubscribe("plain") &&
+			eventUnsubscribe("plain", "RE_SCHEDULE", "HEARTBEAT", "MESSAGE_WAITING", "MESSAGE_QUERY") {
 			if err := eventReadLoop(); err != nil {
 				if errors.Is(err, io.EOF) {
 					log.Println(time.Now(), err)
 				}
-				if errors.Is(err, syscall.WSAECONNRESET) {
+				if errors.Is(err, syscall.WSAECONNRESET) { //windows
+					log.Println(time.Now(), err)
+				}
+				if errors.Is(err, syscall.ECONNRESET) { //linux
 					log.Println(time.Now(), err)
 				}
 			}
@@ -52,7 +57,8 @@ func clientReconnect() error {
 	//		}
 	//	}
 	<-time.After(8 * time.Second)
-	return clientReconnect()
+	e := clientReconnect()
+	return e
 }
 
 //EventLoop function.
