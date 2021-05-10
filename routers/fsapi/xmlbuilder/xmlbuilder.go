@@ -3,7 +3,7 @@ package xmlbuilder
 import (
 	"bytes"
 	"errors"
-	"fmt"
+	"log"
 	"os"
 	"runtime"
 	"strings"
@@ -76,7 +76,7 @@ func makePersonalXml(name string) (e error) {
 		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
 			if vars, e := os.ReadFile(filepath); e != nil {
 				if os.IsNotExist(e) {
-					fmt.Println("vars.xml is missing ...")
+					log.Println("vars.xml is missing ...")
 				}
 				err = e
 			} else {
@@ -86,7 +86,7 @@ func makePersonalXml(name string) (e error) {
 					`  <X-PRE-PROCESS cmd="set" data="pg_handle=pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=fsdba password=fsdba"/>
   <X-PRE-PROCESS cmd="set" data="json_db_handle=$${pg_handle}"/>
   <X-PRE-PROCESS cmd="set" data="local_ip_v4=10.10.10.250"/>
-  <X-PRE-PROCESS cmd="set" data="default_password=1234"/>`)
+  <X-PRE-PROCESS cmd="set" data="default_password=D_e_f_a_u_l_t_P_a_s_s_w_o_r_d"/>`)
 				//  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=stun:stun.freeswitch.org"/>
 				newvars = Update(newvars, `  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=stun:stun.freeswitch.org"/>`,
 					`  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=$${local_ip_v4}"/>`)
@@ -172,7 +172,7 @@ func makePersonalXml(name string) (e error) {
 		}
 
 	case "internal.xml": //sip_profiles/internal.xml
-		var newdata []byte
+		var internal []byte
 		filepath := defaultDirectory + "sip_profiles/internal.xml"
 		defaultfilepath := defaultDirectory + "sip_profiles/internal.xml.default"
 		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
@@ -181,14 +181,23 @@ func makePersonalXml(name string) (e error) {
 			} else {
 				os.WriteFile(defaultfilepath, data, 0660)
 				//<!--<param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password='' options='-c client_min_messages=NOTICE' application_name='freeswitch'" />-->
-				newdata = Update(data,
+				internal = Update(data,
 					`<!--<param name="odbc-dsn" value="pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=freeswitch password='' options='-c client_min_messages=NOTICE' application_name='freeswitch'" />-->`,
 					`<param name="odbc-dsn" value="$${pg_handle}"/>`)
-				os.WriteFile(filepath, newdata, 0600)
+				internal = Update(internal,
+					`<param name="force-register-domain" value="$${domain}"/>`,
+					`<!--<param name="force-register-domain" value="$${domain}"/>-->`)
+				internal = Update(internal,
+					`<param name="force-subscription-domain" value="$${domain}"/>`,
+					`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`)
+				internal = Update(internal,
+					`<param name="force-register-db-domain" value="$${domain}"/>`,
+					`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`)
+				os.WriteFile(filepath, internal, 0600)
 			}
 		}
 	case "internal-ipv6.xml": //sip_profiles/internal-ipv6.xml
-		var newdata []byte
+		var internalipv6 []byte
 		filepath := defaultDirectory + "sip_profiles/internal-ipv6.xml"
 		defaultfilepath := defaultDirectory + "sip_profiles/internal-ipv6.xml.default"
 		if _, e := os.Stat(defaultfilepath); os.IsNotExist(e) {
@@ -197,10 +206,19 @@ func makePersonalXml(name string) (e error) {
 			} else {
 				os.WriteFile(defaultfilepath, data, 0660)
 				//<!--<param name="odbc-dsn" value="dsn:user:pass"/>-->
-				newdata = Update(data,
+				internalipv6 = Update(data,
 					`<!--<param name="odbc-dsn" value="dsn:user:pass"/>-->`,
 					`<param name="odbc-dsn" value="$${pg_handle}"/>`)
-				os.WriteFile(filepath, newdata, 0600)
+				internalipv6 = Update(internalipv6,
+					`<param name="force-register-domain" value="$${domain}"/>`,
+					`<!--<param name="force-register-domain" value="$${domain}"/>-->`)
+				internalipv6 = Update(internalipv6,
+					`<param name="force-subscription-domain" value="$${domain}"/>`,
+					`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`)
+				internalipv6 = Update(internalipv6,
+					`<param name="force-register-db-domain" value="$${domain}"/>`,
+					`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`)
+				os.WriteFile(filepath, internalipv6, 0600)
 			}
 		}
 	case "external.xml": //sip_profiles/external.xml

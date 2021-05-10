@@ -93,14 +93,8 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 					err = e
 				} else { //internal settings rewrite.
 					internal = bytes.ReplaceAll(internal,
-						[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
-						[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
-					internal = bytes.ReplaceAll(internal,
-						[]byte(`<param name="force-subscription-domain" value="$${domain}"/>`),
-						[]byte(`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`))
-					internal = bytes.ReplaceAll(internal,
-						[]byte(`<param name="force-register-db-domain" value="$${domain}"/>`),
-						[]byte(`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`))
+						[]byte(`<param name="__param_name" value="value"/>`),
+						[]byte(`<!--<param name="__param_name" value="value"/>-->`))
 					defaultData = fmt.Sprintf(PROFILE, string(internal))
 				}
 			}
@@ -111,14 +105,8 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 					err = e
 				} else { //internal-ipv6 settings rewrite.
 					internalipv6 = bytes.ReplaceAll(internalipv6,
-						[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
-						[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
-					internalipv6 = bytes.ReplaceAll(internalipv6,
-						[]byte(`<param name="force-subscription-domain" value="$${domain}"/>`),
-						[]byte(`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`))
-					internalipv6 = bytes.ReplaceAll(internalipv6,
-						[]byte(`<param name="force-register-db-domain" value="$${domain}"/>`),
-						[]byte(`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`))
+						[]byte(`<param name="__param_name" value="value"/>`),
+						[]byte(`<!--<param name="__param_name" value="value"/>-->`))
 					defaultData = fmt.Sprintf(PROFILE, string(internalipv6))
 				}
 			}
@@ -162,14 +150,8 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 				err = e
 			} else { //internal settings rewrite.
 				internal = bytes.ReplaceAll(internal,
-					[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
-					[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
-				internal = bytes.ReplaceAll(internal,
-					[]byte(`<param name="force-subscription-domain" value="$${domain}"/>`),
-					[]byte(`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`))
-				internal = bytes.ReplaceAll(internal,
-					[]byte(`<param name="force-register-db-domain" value="$${domain}"/>`),
-					[]byte(`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`))
+					[]byte(`<param name="__param_name" value="value"/>`),
+					[]byte(`<!--<param name="__param_name" value="value"/>-->`))
 				defaultData = fmt.Sprintf(PROFILE, string(internal))
 			}
 		case "internal-ipv6": //./sip_profiles/internal-ipv6.xml
@@ -178,14 +160,8 @@ func ReadConfiguration(c *gin.Context) (b string, e error) {
 				err = e
 			} else { //internal-ipv6 settings rewrite.
 				internalipv6 = bytes.ReplaceAll(internalipv6,
-					[]byte(`<param name="force-register-domain" value="$${domain}"/>`),
-					[]byte(`<!--<param name="force-register-domain" value="$${domain}"/>-->`))
-				internalipv6 = bytes.ReplaceAll(internalipv6,
-					[]byte(`<param name="force-subscription-domain" value="$${domain}"/>`),
-					[]byte(`<!--<param name="force-subscription-domain" value="$${domain}"/>-->`))
-				internalipv6 = bytes.ReplaceAll(internalipv6,
-					[]byte(`<param name="force-register-db-domain" value="$${domain}"/>`),
-					[]byte(`<!--<param name="force-register-db-domain" value="$${domain}"/>-->`))
+					[]byte(`<param name="__param_name" value="value"/>`),
+					[]byte(`<!--<param name="__param_name" value="value"/>-->`))
 				defaultData = fmt.Sprintf(PROFILE, string(internalipv6))
 			}
 		case "external": //./sip_profiles/external.xml

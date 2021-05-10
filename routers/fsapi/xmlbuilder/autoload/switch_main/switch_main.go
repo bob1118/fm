@@ -30,16 +30,9 @@ func ReadConfiguration() (s string, e error) {
 		data = bytes.ReplaceAll(data,
 			[]byte(`<param name="sessions-per-second" value="30"/>`),
 			[]byte(`<param name="sessions-per-second" value="100"/>`))
-		defaultData = string(data)
 		data = bytes.ReplaceAll(data,
 			[]byte(`<param name="loglevel" value="debug"/>`),
 			[]byte(`<param name="loglevel" value="info"/>`))
-		defaultData = string(data)
-		/* function BuildPersonalConf() set core-db-dsn before switch boot.
-		data = bytes.ReplaceAll(data,
-			[]byte(`<!-- <param name="core-db-dsn" value="dsn:username:password" /> -->`),
-			[]byte(`<param name="core-db-dsn" value="$${pg_handle}"/>`))
-		*/
 		defaultData = string(data)
 	}
 	return defaultData, err

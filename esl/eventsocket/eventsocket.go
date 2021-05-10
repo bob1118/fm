@@ -502,3 +502,16 @@ func (r *Event) PrettyPrint() {
 		fmt.Printf("BODY: %#v\n", r.Body)
 	}
 }
+
+func (r *Event) LogPrint() {
+	var keys []string
+	for k := range r.Header {
+		keys = append(keys, k)
+	}
+	for _, k := range keys {
+		log.Printf("%s: %#v\n", k, r.Header[k])
+	}
+	if r.Body != "" {
+		log.Printf("BODY: %#v\n", r.Body)
+	}
+}

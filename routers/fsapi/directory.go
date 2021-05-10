@@ -38,8 +38,15 @@ func doDirectory(c *gin.Context) (b string) {
 	if false ||
 		(utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") && utils.IsEqual(c.PostForm("sip_auth_method"), "REGISTER")) ||
 		(utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") && utils.IsEqual(c.PostForm("sip_auth_method"), "SUBSCRIBE")) ||
-		(utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") && utils.IsEqual(c.PostForm("sip_auth_method"), "INVITE")) ||
-		(utils.IsEqual(c.PostForm("Event-Name"), "GENERAL") && utils.IsEqual(c.PostForm("action"), "message-count")) { //voicemail need lookup a user id, response like auth.
+		(utils.IsEqual(c.PostForm("Event-Name"), "REQUEST_PARAMS") && utils.IsEqual(c.PostForm("action"), "sip_auth") && utils.IsEqual(c.PostForm("sip_auth_method"), "INVITE")) {
+		ua := models.Account{}
+		ua.Aid = c.PostForm("user")
+		ua.Adomain = c.PostForm("domain")
+		body = useragentAuth(ua)
+	}
+
+	//voicemail need lookup a user id, response like auth.
+	if utils.IsEqual(c.PostForm("Event-Name"), "GENERAL") && utils.IsEqual(c.PostForm("action"), "message-count") {
 		ua := models.Account{}
 		ua.Aid = c.PostForm("user")
 		ua.Adomain = c.PostForm("domain")

@@ -40,7 +40,7 @@ func clientReconnect() error {
 	} else {
 		ClientCon = c
 		if eventSubscribe("plain") &&
-			eventUnsubscribe("plain", "RE_SCHEDULE", "HEARTBEAT", "MESSAGE_WAITING", "MESSAGE_QUERY") {
+			eventUnsubscribe("plain", "RE_SCHEDULE", "HEARTBEAT", "MESSAGE_WAITING", "MESSAGE_QUERY") { // RE_SCHEDULE HEARTBEAT MESSAGE_WAITING MESSAGE_QUERY
 			if err := eventReadLoop(); err != nil {
 				if errors.Is(err, io.EOF) {
 					log.Println(time.Now(), err)
@@ -128,7 +128,7 @@ func eventUnsubscribe(format string, enames ...string) bool {
 
 //eventAction function.
 func eventAction(e *eventsocket.Event) {
-	log.Println(e)
+	e.LogPrint()
 	if eventName, ok := e.Header["Event-Name"].(string); ok {
 		switch eventName {
 		case "BACKGROUND_JOB":

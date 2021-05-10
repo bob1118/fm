@@ -2,7 +2,7 @@ package odbc_cdr
 
 import (
 	"bytes"
-	"fmt"
+	"log"
 	"os"
 	"runtime"
 
@@ -37,7 +37,7 @@ func init() {
 //MakeDefaultConfiguration.
 func MakeDefaultConfiguration() {
 	if e := os.WriteFile(defaultConffile, []byte(ODBC_CDR), 0660); e != nil {
-		fmt.Println(e)
+		log.Println(e)
 	}
 }
 
