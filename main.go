@@ -32,8 +32,8 @@ func main() {
 	go esl.Run("inbound")
 	go esl.Run("outbound")
 
-	//do licence check per 1second.
-	for now := range time.Tick(1 * time.Second) {
+	//do licence check per second.
+	for now := range time.Tick(8 * time.Second) {
 		fmt.Println(now)
 	}
 }

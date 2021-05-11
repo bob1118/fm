@@ -508,10 +508,12 @@ func (r *Event) LogPrint() {
 	for k := range r.Header {
 		keys = append(keys, k)
 	}
+	sort.Strings(keys)
 	for _, k := range keys {
 		log.Printf("%s: %#v\n", k, r.Header[k])
 	}
 	if r.Body != "" {
 		log.Printf("BODY: %#v\n", r.Body)
 	}
+	log.Println("______________________________event end_______________________________")
 }
