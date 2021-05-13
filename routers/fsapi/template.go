@@ -102,8 +102,8 @@ const CONFIGURATION string = `<document type="freeswitch/xml"  encoding="UTF-8">
 </section>
 </document>`
 
-//dialplan inbound.
-const DialplanFreeswitchInbound string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+//dialplan park.
+const DialplanAppPark string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="freeswitch/xml">
   <section name="dialplan" description="dialplan inbound for FreeSwitch">
     <context name="default">
@@ -118,8 +118,8 @@ const DialplanFreeswitchInbound string = `<?xml version="1.0" encoding="UTF-8" s
 </document>
 `
 
-//dialplan outbound.
-const DialplanFreeswitchOutbound string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+//dialplan socket.
+const DialplanAppSocket string = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <document type="freeswitch/xml">
   <section name="dialplan" description="dialplan outbound FreeSwitch">
     <context name="default">

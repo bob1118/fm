@@ -1,19 +1,36 @@
+//eslserver is a tcp server for dialplan application socket
+//while mod_sofia receive a incoming call, dialplan execute socket(ip:port async full) and socket connect to eslserver.
+
 package eslserver
 
 import (
+	"fmt"
 	"log"
-	"sync"
 
 	"github.com/bob1118/fm/config/fmconfig"
 	"github.com/bob1118/fm/esl/eventsocket"
+	"github.com/bob1118/fm/esl/run_time"
 )
 
-var ServerCon sync.Map
+type CALL struct {
+	eventname         string
+	coreuuid          string
+	fsipv4            string
+	uuid              string
+	callid            string
+	direction         string
+	profile           string
+	domain            string
+	ani               string
+	distinationnumber string
+}
 
 func init() {}
 
 func ServerRun() {
-	eventsocket.ListenAndServe(fmconfig.CFG.Esl.ListenAddr, handler)
+	if err := eventsocket.ListenAndServe(fmconfig.CFG.Esl.ListenAddr, handler); err != nil {
+		log.Println(err)
+	}
 }
 
 func ServerRestart() {}
@@ -23,9 +40,55 @@ func handler(c *eventsocket.Connection) {
 	if e, err := c.Send("connect"); err != nil {
 		log.Println(err)
 	} else {
-		log.Println(e)
+		eventChannelDefaultAction(c, e)
 		eventReadAChannelLoop(c)
 	}
+}
+
+//incoming call CHANNEL_DATA proc
+func eventChannelDefaultAction(c *eventsocket.Connection, e *eventsocket.Event) {
+	DialplanExecute(c, e)
+}
+
+//Route
+func DialplanExecute(c *eventsocket.Connection, e *eventsocket.Event) error {
+	e.LogPrint()
+	call := &CALL{
+		eventname:         e.Get("Event-Name"),
+		coreuuid:          e.Get("Variable_core-uuid"),
+		fsipv4:            e.Get("Variable_freeswitch-ipv4"),
+		uuid:              e.Get("Variable_uuid"),
+		callid:            e.Get("Variable_sip_call_id"),
+		direction:         e.Get("Variable_direction"),
+		profile:           e.Get("Variable_sofia_profile_name"),
+		domain:            e.Get("Variable_domain_name"),
+		ani:               e.Get("Caller-Ani"),
+		distinationnumber: e.Get("Caller-Destination-Number"),
+	}
+
+	if call.CallerIsUa() { //ua
+		if call.CalleeIsUa() { //dial local domain.
+			app := "bridge"
+			appargv := fmt.Sprintf(`{origination_caller_id_number=000000}sofia/%s/%s`, call.domain, call.distinationnumber)
+			c.Execute(app, appargv, true)
+		} else { //dial out
+			app := "bridge"
+			gname := "gw"
+			appargv := fmt.Sprintf(`sofia/gateway/%s/%s`, gname, call.distinationnumber)
+			c.Execute(app, appargv, true)
+		}
+	} else { //gateway incoming.
+	}
+	return nil
+}
+
+func (c *CALL) CallerIsUa() bool {
+	mkey := c.ani + "@" + c.domain
+	return run_time.IsUa(mkey)
+}
+func (c *CALL) CalleeIsUa() bool {
+	mkey := c.distinationnumber + "@" + c.domain
+	return run_time.IsUa(mkey)
 }
 
 //eventReadAChannelLoop
@@ -33,7 +96,6 @@ func eventReadAChannelLoop(c *eventsocket.Connection) error {
 	isLoop := true
 	for isLoop {
 		if e, err := c.ReadEvent(); err != nil {
-			log.Println(err)
 			return err
 		} else {
 			eventChannelAction(c, e)
@@ -43,7 +105,9 @@ func eventReadAChannelLoop(c *eventsocket.Connection) error {
 }
 
 func eventChannelAction(c *eventsocket.Connection, e *eventsocket.Event) {
-	if eventName, ok := e.Header["Event-Name"].(string); ok {
+	log.Println(e)
+	eventName := e.Get("Event-Name")
+	if len(eventName) > 0 {
 		switch eventName {
 		case "BACKGROUND_JOB":
 			backgroundjobAction(c, e)
@@ -63,25 +127,10 @@ func eventChannelAction(c *eventsocket.Connection, e *eventsocket.Event) {
 
 //backgroundjobAction function.
 func backgroundjobAction(c *eventsocket.Connection, e *eventsocket.Event) {
-	if bgcommand, ok := e.Header["Job-Command"].(string); ok {
+	bgcommand := e.Get("Job-Command")
+	if len(bgcommand) > 0 {
 		switch bgcommand {
 		case "originate", "Originate", "ORIGINATE":
-			// in := models.BackgroundJob{}
-			// in.BgjobUUID = e.Header["Job-Uuid"].(string)
-			// in.BgjobCommand = bgcommand
-			// in.BgjobCmdArg = e.Header["Job-Command-Arg"].(string)
-			// //+OK 9fbc526c-80c2-49c8-bc2d-9735872dfa53//-ERR UNALLOCATED_NUMBER
-			// body := strings.Split(e.Body, " ")
-			// in.BgjobResult = strings.TrimSpace(body[1])
-			// switch body[0] {
-			// case "+OK":
-			// 	in.BgjobReturn = true
-			// case "-ERR":
-			// 	in.BgjobReturn = false
-			// }
-			// if err := models.CreateBgjob(&in); err != nil {
-			// 	log.Println(err)
-			// }
 		case "command":
 			//todo.
 		default:

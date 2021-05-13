@@ -1,3 +1,7 @@
+//eslclient is a tcp client connect to mod_evnet_socket.
+//while mod_sofia receive a incoming call, dialplan execute app park.
+//now, do what you want to before received park execute complete event.
+
 package eslclient
 
 import (
@@ -11,7 +15,7 @@ import (
 
 	"github.com/bob1118/fm/config/fmconfig"
 	"github.com/bob1118/fm/esl/eventsocket"
-	"github.com/bob1118/fm/service/run_time"
+	"github.com/bob1118/fm/esl/run_time"
 )
 
 var CHfsisrun chan bool
@@ -43,7 +47,7 @@ func clientReconnect() error {
 		} else {
 			ClientCon = c
 			if eventSubscribe("plain") &&
-				eventUnsubscribe("plain", "RE_SCHEDULE", "HEARTBEAT", "MESSAGE_WAITING", "MESSAGE_QUERY") { // RE_SCHEDULE HEARTBEAT MESSAGE_WAITING MESSAGE_QUERY
+				eventUnsubscribe("plain", "RE_SCHEDULE", "HEARTBEAT", "MESSAGE_WAITING", "MESSAGE_QUERY") { // nixevent RE_SCHEDULE HEARTBEAT MESSAGE_WAITING MESSAGE_QUERY
 				if err := eventReadLoop(); err != nil {
 					if errors.Is(err, io.EOF) {
 						log.Println(time.Now(), err)
@@ -79,7 +83,7 @@ func eventReadLoop() error {
 
 //eventAction function.
 func eventAction(e *eventsocket.Event) {
-	e.LogPrint()
+	//	e.LogPrint()
 	eventName := e.Get("Event-Name")
 	if len(eventName) > 0 {
 		switch eventName {
@@ -107,11 +111,11 @@ func customAction(e *eventsocket.Event) {
 		switch eventsubclass {
 		case "sofia::pre_register", "sofia::register_attempt", "sofia::register_failure": //sofia_reg_handle_register_token
 		case "sofia::register": //sofia_reg_handle_register_token
-			run_time.Setuaonline(e)
+			run_time.SetUaOnline(e)
 		case "sofia::unregister": //sofia_reg_handle_register_token
-			run_time.Setuaoffline(e)
+			run_time.SetUaOffline(e)
 		case "sofia::expire": //sofia_reg_del_call_back
-			run_time.Setuaoffline(e)
+			run_time.SetUaOffline(e)
 		case "sofia::gateway_state": //sofia_reg_fire_custom_gateway_state_event
 			//Gateway:myfsgateway
 			//State:REGISTER/REGED
@@ -123,7 +127,8 @@ func customAction(e *eventsocket.Event) {
 
 //backgroundjobAction function.
 func backgroundjobAction(e *eventsocket.Event) {
-	if bgcommand, ok := e.Header["Job-Command"].(string); ok {
+	bgcommand := e.Get("Job-Command")
+	if len(bgcommand) > 0 {
 		switch bgcommand {
 		case "originate", "Originate", "ORIGINATE":
 			// in := models.BackgroundJob{}

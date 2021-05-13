@@ -10,6 +10,8 @@ import (
 func init() {}
 
 //Run
+//freeswitch inbound connector execute system api,channel application, and more.
+//freeswitch outbound connector execute some channel application.
 func Run(eslmode string) {
 	switch eslmode {
 	case "inbound", "Inbound", "INBOUND":

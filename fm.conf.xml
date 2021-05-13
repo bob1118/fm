@@ -21,7 +21,7 @@
     <ConfDirectory>C:/Program Files/FreeSWITCH/conf/</ConfDirectory>
   </Runtime>
   <Esl>
-    <Mode>inbound</Mode>
+    <Mode>outbound</Mode>
     <ServerAddr>[::]:8021</ServerAddr>
     <Password>ClueCon</Password>
     <Timeout>4000000000</Timeout>
