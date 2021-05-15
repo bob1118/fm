@@ -10,9 +10,9 @@ import (
 
 // -- Drop table
 
-// -- DROP TABLE public.cc_gateways;
+// -- DROP TABLE cc_gateways;
 
-// CREATE TABLE public.cc_gateways (
+// CREATE TABLE cc_gateways (
 // 	gateway_uuid uuid NOT NULL DEFAULT gen_random_uuid(),
 // 	gateway_name varchar NOT NULL,
 // 	gateway_username varchar NULL,
@@ -28,9 +28,9 @@ import (
 // 	gateway_calleridinfrom varchar NULL,
 // 	gateway_extensionincontact varchar NULL,
 // 	gateway_optionping varchar NULL,
-// 	CONSTRAINT cc_gateways_pkey PRIMARY KEY (gateway_uuid)
+// 	CONSTRAINT cc_gateways_pkey PRIMARY KEY (gateway_uuid),
+// 	CONSTRAINT cc_gateways_un UNIQUE (gateway_name)
 // );
-// COMMENT ON TABLE "public"."cc_gateways" IS 'freeswitch external gateways';
 
 // -- Permissions
 

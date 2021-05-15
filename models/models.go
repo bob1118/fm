@@ -49,6 +49,7 @@ func InitFreeswitch(strcon string) {
 		pgsqlInitFreeswitchAccounts()
 		pgsqlInitFreeswitchGateways()
 		pgsqlInitFreeswitchE164s()
+		pgsqlInitFreeswitchAcce164()
 	}
 }
 
@@ -161,6 +162,21 @@ func pgsqlInitFreeswitchE164s() {
 		if !isFound {
 			db.MustExec(CC_E164S)
 			db.MustExec(DEFAULT_E164S)
+		}
+	}
+}
+
+//pgsqlInitFreeswitchAcce164
+func pgsqlInitFreeswitchAcce164() {
+	var err error
+	var isFound bool
+
+	if err = db.Get(&isFound, "select count(1)!=0 as isFound from pg_tables where tablename =$1", "cc_acce164"); err != nil {
+		log.Println(err.Error())
+	} else {
+		if !isFound {
+			db.MustExec(CC_ACCE164)
+			db.MustExec(DEFAULT_ACCE164)
 		}
 	}
 }

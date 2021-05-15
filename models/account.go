@@ -12,9 +12,9 @@ import (
 
 // -- Drop table
 
-// -- DROP TABLE public.cc_accounts;
+// -- DROP TABLE cc_accounts;
 
-// CREATE TABLE public.cc_accounts (
+// CREATE TABLE cc_accounts (
 // 	account_uuid uuid NOT NULL DEFAULT gen_random_uuid(),
 // 	account_id varchar NOT NULL,
 // 	account_name varchar NULL,
@@ -25,9 +25,9 @@ import (
 // 	account_domain varchar NULL,
 // 	account_proxy varchar NULL,
 // 	account_cacheable varchar NULL,
-// 	CONSTRAINT cc_accounts_pkey PRIMARY KEY (account_uuid)
+// 	CONSTRAINT cc_accounts_pkey PRIMARY KEY (account_uuid),
+// 	CONSTRAINT cc_accounts_un UNIQUE (account_id, account_domain)
 // );
-// COMMENT ON TABLE public.cc_accounts IS 'freeswitch mod_sofia profile internal account@domain.';
 
 // -- Permissions
 

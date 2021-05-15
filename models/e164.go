@@ -10,18 +10,18 @@ import (
 
 // -- Drop table
 
-// -- DROP TABLE public.cc_e164s;
+// -- DROP TABLE cc_e164s;
 
-// CREATE TABLE public.cc_e164s (
+// CREATE TABLE cc_e164s (
 // 	e164_uuid uuid NOT NULL DEFAULT gen_random_uuid(),
 // 	gateway_uuid uuid NULL,
 // 	e164_number varchar NOT NULL,
 // 	e164_enable bool NULL DEFAULT true,
 // 	e164_lockin bool NULL DEFAULT false,
 // 	e164_lockout bool NULL DEFAULT false,
-// 	CONSTRAINT cc_e164s_pkey PRIMARY KEY (e164_uuid)
+// 	CONSTRAINT cc_e164s_pkey PRIMARY KEY (e164_uuid),
+// 	CONSTRAINT cc_e164s_un UNIQUE (e164_number)
 // );
-// COMMENT ON TABLE public.cc_e164s IS 'a gateway include some telephone(e164) numbers.';
 
 // -- Permissions
 

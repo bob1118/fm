@@ -117,9 +117,7 @@ func customAction(e *eventsocket.Event) {
 		case "sofia::expire": //sofia_reg_del_call_back
 			run_time.SetUaOffline(e)
 		case "sofia::gateway_state": //sofia_reg_fire_custom_gateway_state_event
-			//Gateway:myfsgateway
-			//State:REGISTER/REGED
-			//Ping-Status:UP
+			run_time.SetGatewayState(e)
 		default:
 		}
 	}

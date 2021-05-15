@@ -10,6 +10,8 @@ import (
 	"github.com/bob1118/fm/config/fmconfig"
 	"github.com/bob1118/fm/esl/eventsocket"
 	"github.com/bob1118/fm/esl/run_time"
+	"github.com/bob1118/fm/models"
+	"github.com/bob1118/fm/utils"
 )
 
 type CALL struct {
@@ -45,14 +47,14 @@ func handler(c *eventsocket.Connection) {
 	}
 }
 
-//incoming call CHANNEL_DATA proc
+//incoming call CHANNEL_DATA
 func eventChannelDefaultAction(c *eventsocket.Connection, e *eventsocket.Event) {
 	DialplanExecute(c, e)
 }
 
-//Route
+//DialplanExecute
 func DialplanExecute(c *eventsocket.Connection, e *eventsocket.Event) error {
-	e.LogPrint()
+
 	call := &CALL{
 		eventname:         e.Get("Event-Name"),
 		coreuuid:          e.Get("Variable_core-uuid"),
@@ -66,18 +68,45 @@ func DialplanExecute(c *eventsocket.Connection, e *eventsocket.Event) error {
 		distinationnumber: e.Get("Caller-Destination-Number"),
 	}
 
-	if call.CallerIsUa() { //ua
-		if call.CalleeIsUa() { //dial local domain.
-			app := "bridge"
-			appargv := fmt.Sprintf(`{origination_caller_id_number=000000}sofia/%s/%s`, call.domain, call.distinationnumber)
-			c.Execute(app, appargv, true)
-		} else { //dial out
-			app := "bridge"
-			gname := "gw"
-			appargv := fmt.Sprintf(`sofia/gateway/%s/%s`, gname, call.distinationnumber)
-			c.Execute(app, appargv, true)
+	//send myevents
+	if e, err := c.Send("myevents"); err != nil {
+		log.Println(err)
+	} else {
+		e.LogPrint()
+	}
+
+	//bridge
+	if utils.IsEqual(call.profile, "internal") { //ua incoming
+		if call.CallerIsUa() { //true { //
+			if call.CalleeIsUa() { //dial local domain.
+				app := "bridge"
+				appargv := fmt.Sprintf(`{origination_caller_id_name=%s,origination_caller_id_number=%s}sofia/%s/%s`, "local", call.ani, call.domain, call.distinationnumber)
+				if e, err := c.Execute(app, appargv, true); err != nil {
+					log.Println(err)
+				} else {
+					e.LogPrint()
+				}
+			} else { //dial out
+				// key := call.ani + "@" + call.domain
+				// gatewayname := run_time.GetUaDefaultE164Number(key)
+				// gatewaye164number := run_time.GetUaDefaultE164Number(key)
+				// appargv := fmt.Sprintf(`{origination_caller_id_number=%s}sofia/gateway/%s/%s`, gatewaye164number, gatewayname, call.distinationnumber)
+				// c.Execute("bridge", appargv, true)
+				q := fmt.Sprintf("account_id=%s and account_domain=%s and acce164_isdefault=true limit 1", call.ani, call.domain)
+				if acce164s, err := models.GetAcce164s(q); err != nil {
+					gatewayname := acce164s[0].Gname
+					gatewaye164number := acce164s[0].Enumber
+					appargv := fmt.Sprintf(`{origination_caller_id_number=%s}sofia/gateway/%s/%s`, gatewaye164number, gatewayname, call.distinationnumber)
+					c.Execute("bridge", appargv, true)
+				} else {
+					c.Execute("hangup", "INVALID_GATEWAY", true)
+				}
+			}
+		} else {
+			c.Execute("hangup", "USER_NOT_REGISTERED", true)
 		}
-	} else { //gateway incoming.
+	}
+	if utils.IsEqual(call.profile, "external") { //gateway incoming
 	}
 	return nil
 }
@@ -105,7 +134,7 @@ func eventReadAChannelLoop(c *eventsocket.Connection) error {
 }
 
 func eventChannelAction(c *eventsocket.Connection, e *eventsocket.Event) {
-	log.Println(e)
+	e.LogPrint()
 	eventName := e.Get("Event-Name")
 	if len(eventName) > 0 {
 		switch eventName {
