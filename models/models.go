@@ -50,6 +50,8 @@ func InitFreeswitch(strcon string) {
 		pgsqlInitFreeswitchGateways()
 		pgsqlInitFreeswitchE164s()
 		pgsqlInitFreeswitchAcce164()
+		pgsqlInitFreeswitchFifos()
+		pgsqlInitFreeswitchFifomember()
 	}
 }
 
@@ -177,6 +179,36 @@ func pgsqlInitFreeswitchAcce164() {
 		if !isFound {
 			db.MustExec(CC_ACCE164)
 			db.MustExec(DEFAULT_ACCE164)
+		}
+	}
+}
+
+//pgsqlInitFreeswitchFifos
+func pgsqlInitFreeswitchFifos() {
+	var err error
+	var isFound bool
+
+	if err = db.Get(&isFound, "select count(1)!=0 as isFound from pg_tables where tablename =$1", "cc_fifos"); err != nil {
+		log.Println(err.Error())
+	} else {
+		if !isFound {
+			db.MustExec(CC_FIFOS)
+			db.MustExec(DEFAULT_FIFOS)
+		}
+	}
+}
+
+//pgsqlInitFreeswitchFifomember
+func pgsqlInitFreeswitchFifomember() {
+	var err error
+	var isFound bool
+
+	if err = db.Get(&isFound, "select count(1)!=0 as isFound from pg_tables where tablename =$1", "cc_fifomember"); err != nil {
+		log.Println(err.Error())
+	} else {
+		if !isFound {
+			db.MustExec(CC_FIFOMEMBER)
+			db.MustExec(DEFAULT_FIFOMEMBER)
 		}
 	}
 }

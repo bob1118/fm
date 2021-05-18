@@ -16,7 +16,7 @@ func doDialplan(c *gin.Context) (b string) {
 	case "inbound", "Inbound", "INBOUND":
 		body = DialplanAppPark
 	case "outbound", "Outbound", "OUTBOUND":
-		body = fmt.Sprintf(DialplanAppSocket, fmconfig.CFG.Esl.ListenAddr)
+		body = fmt.Sprintf(DialplanAppSocket, fmconfig.CFG.Esl.ListenAddr, fmconfig.CFG.Esl.ListenAddr)
 	}
 	return body
 }

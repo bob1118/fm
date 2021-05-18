@@ -129,6 +129,13 @@ const DialplanAppSocket string = `<?xml version="1.0" encoding="UTF-8" standalon
         </condition>
       </extension>
     </context>
+    <context name="public">
+      <extension name="default">
+        <condition>
+          <action application="socket" data="%s async full"/>
+        </condition>
+      </extension>
+    </context>
   </section>
 </document>
 `

@@ -6,37 +6,6 @@ import (
 	"strings"
 )
 
-// -- public.cc_gateways definition
-
-// -- Drop table
-
-// -- DROP TABLE cc_gateways;
-
-// CREATE TABLE cc_gateways (
-// 	gateway_uuid uuid NOT NULL DEFAULT gen_random_uuid(),
-// 	gateway_name varchar NOT NULL,
-// 	gateway_username varchar NULL,
-// 	gateway_realm varchar NULL,
-// 	gateway_fromuser varchar NULL,
-// 	gateway_fromdomain varchar NULL,
-// 	gateway_password varchar NULL,
-// 	gateway_extension varchar NULL,
-// 	gateway_proxy varchar NULL,
-// 	gateway_registerproxy varchar NULL,
-// 	gateway_expire varchar NULL,
-// 	gateway_register varchar NULL,
-// 	gateway_calleridinfrom varchar NULL,
-// 	gateway_extensionincontact varchar NULL,
-// 	gateway_optionping varchar NULL,
-// 	CONSTRAINT cc_gateways_pkey PRIMARY KEY (gateway_uuid),
-// 	CONSTRAINT cc_gateways_un UNIQUE (gateway_name)
-// );
-
-// -- Permissions
-
-// ALTER TABLE public.cc_gateways OWNER TO fsdba;
-// GRANT ALL ON TABLE public.cc_gateways TO fsdba;
-
 type Gateway struct {
 	Guuid               string `db:"gateway_uuid" json:"uuid"`
 	Gname               string `db:"gateway_name" json:"name"`

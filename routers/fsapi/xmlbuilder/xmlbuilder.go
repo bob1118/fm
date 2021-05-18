@@ -81,12 +81,20 @@ func makePersonalXml(name string) (e error) {
 				err = e
 			} else {
 				os.WriteFile(defaultfilepath, vars, 0660)
+				var strmultiline string
+				if strings.EqualFold(runtime.GOOS, "windows") {
+					strmultiline = `  <X-PRE-PROCESS cmd="set" data="default_password=D_e_f_a_u_l_t_P_a_s_s_w_o_r_d"/>` + "\r\n" +
+						`  <X-PRE-PROCESS cmd="set" data="local_ip_v4=10.10.10.250"/>` + "\r\n" +
+						`  <X-PRE-PROCESS cmd="set" data="json_db_handle=$${pg_handle}"/>` + "\r\n" +
+						`  <X-PRE-PROCESS cmd="set" data="pg_handle=pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=fsdba password=fsdba"/>`
+				} else {
+					strmultiline = `  <X-PRE-PROCESS cmd="set" data="default_password=D_e_f_a_u_l_t_P_a_s_s_w_o_r_d"/>` + "\n" +
+						`  <X-PRE-PROCESS cmd="set" data="local_ip_v4=10.10.10.250"/>` + "\n" +
+						`  <X-PRE-PROCESS cmd="set" data="json_db_handle=$${pg_handle}"/>` + "\n" +
+						`  <X-PRE-PROCESS cmd="set" data="pg_handle=pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=fsdba password=fsdba"/>`
+				}
 				// <X-PRE-PROCESS cmd="set" data="default_password=1234"/>
-				newvars = Update(vars, `  <X-PRE-PROCESS cmd="set" data="default_password=1234"/>`,
-					`  <X-PRE-PROCESS cmd="set" data="pg_handle=pgsql://hostaddr=127.0.0.1 dbname=freeswitch user=fsdba password=fsdba"/>
-  <X-PRE-PROCESS cmd="set" data="json_db_handle=$${pg_handle}"/>
-  <X-PRE-PROCESS cmd="set" data="local_ip_v4=10.10.10.250"/>
-  <X-PRE-PROCESS cmd="set" data="default_password=D_e_f_a_u_l_t_P_a_s_s_w_o_r_d"/>`)
+				newvars = Update(vars, `  <X-PRE-PROCESS cmd="set" data="default_password=1234"/>`, strmultiline)
 				//  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=stun:stun.freeswitch.org"/>
 				newvars = Update(newvars, `  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=stun:stun.freeswitch.org"/>`,
 					`  <X-PRE-PROCESS cmd="stun-set" data="external_sip_ip=$${local_ip_v4}"/>`)
