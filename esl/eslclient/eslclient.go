@@ -106,16 +106,31 @@ func eventAction(e *eventsocket.Event) {
 }
 
 func customAction(e *eventsocket.Event) {
+	user := e.Get("User_Name")
+	domain := e.Get("Domain_Name")
 	eventsubclass := e.Get("Event-Subclass")
+
 	if len(eventsubclass) > 0 {
 		switch eventsubclass {
 		case "sofia::pre_register", "sofia::register_attempt", "sofia::register_failure": //sofia_reg_handle_register_token
 		case "sofia::register": //sofia_reg_handle_register_token
-			run_time.SetUaOnline(e)
+			if len(user) > 0 && len(domain) > 0 {
+				originate_string := fmt.Sprintf(`user/%s@%s`, user, domain)
+				run_time.SetUaOnline(e)
+				run_time.FifoMemberManage(ClientCon, originate_string, true)
+			}
 		case "sofia::unregister": //sofia_reg_handle_register_token
-			run_time.SetUaOffline(e)
+			if len(user) > 0 && len(domain) > 0 {
+				originate_string := fmt.Sprintf(`user/%s@%s`, user, domain)
+				run_time.SetUaOffline(e)
+				run_time.FifoMemberManage(ClientCon, originate_string, false)
+			}
 		case "sofia::expire": //sofia_reg_del_call_back
-			run_time.SetUaOffline(e)
+			if len(user) > 0 && len(domain) > 0 {
+				originate_string := fmt.Sprintf(`user/%s@%s`, user, domain)
+				run_time.SetUaOffline(e)
+				run_time.FifoMemberManage(ClientCon, originate_string, false)
+			}
 		case "sofia::gateway_state": //sofia_reg_fire_custom_gateway_state_event
 			run_time.SetGatewayState(e)
 		default:
