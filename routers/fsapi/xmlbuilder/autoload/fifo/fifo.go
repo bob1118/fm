@@ -79,7 +79,7 @@ func buildXmlFifos() (s string, e error) {
 // 		for _, fifo := range fifos {
 // 			allfifomembers := ``
 // 			fifoname := fifo.Fname
-// 			condistion := fmt.Sprintf("fifo_name=%s", fifoname)
+// 			condistion := fmt.Sprintf("fifo_name='%s'", fifoname)
 // 			if fifomembers, err := models.GetFifomembers(condistion); err != nil {
 // 				return ``, err
 // 			} else {

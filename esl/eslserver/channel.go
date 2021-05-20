@@ -1,13 +1,58 @@
 package eslserver
 
 import (
+	"errors"
 	"fmt"
+	"log"
 
 	"github.com/bob1118/fm/esl/eventsocket"
 	"github.com/bob1118/fm/models"
+	"github.com/bob1118/fm/utils"
 )
 
 ////////////////////first event CHANNEL_DATA action///////////////////////////
+
+//DefaultChannelAction
+func ChannelDefaultAction(c *eventsocket.Connection, e *eventsocket.Event) error {
+	var myerr error
+
+	call := &CALL{
+		coreuuid:          e.Get("Core-Uuid"),
+		fsipv4:            e.Get("Freeswitch-Ipv4"),
+		eventname:         e.Get("Event-Name"),
+		uuid:              e.Get("Variable_uuid"),
+		callid:            e.Get("Variable_call_uuid"),
+		direction:         e.Get("Variable_direction"),
+		profile:           e.Get("Variable_sofia_profile_name"),
+		domain:            e.Get("Variable_domain_name"),
+		gateway:           e.Get("Variable_sip_gateway"),
+		ani:               e.Get("Caller-Ani"),
+		distinationnumber: e.Get("Caller-Destination-Number"),
+	}
+
+	//send myevents
+	if myevent, err := c.Send("myevents"); err != nil {
+		myerr = err
+		log.Println(err)
+	} else {
+		myevent.LogPrint()
+	}
+
+	if utils.IsEqual(call.direction, "inbound") {
+		switch call.profile {
+		case "internal", "internal-ipv6": //internal ua incoming
+			myerr = channelInternalProc(c, call)
+		case "external", "external-ipv6": //external gateway incoming
+			myerr = channelExternalProc(c, call)
+		default:
+			myerr = errors.New("CHANNEL_DATA:known profile")
+		}
+	} else {
+		//outgoing hit socket?
+		e.LogPrint()
+	}
+	return myerr
+}
 
 //channelInternalProc
 func channelInternalProc(c *eventsocket.Connection, call *CALL) (err error) {
@@ -19,7 +64,7 @@ func channelInternalProc(c *eventsocket.Connection, call *CALL) (err error) {
 			appargv := fmt.Sprintf(`{origination_caller_id_name=%s,origination_caller_id_number=%s}sofia/%s/%s`, "local", call.ani, call.domain, call.distinationnumber)
 			c.Execute("set", `hangup_after_bridge=true`, true)
 			c.Execute(app, appargv, true)
-		} else { //ua dial out with gateway.
+		} else { //ua dial out through gateway.
 			q := fmt.Sprintf(`account_id='%s' and account_domain='%s' and acce164_isdefault=true limit 1`, call.ani, call.domain)
 			if acce164s, err := models.GetAcce164s(q); err != nil {
 				myerr = err
@@ -43,11 +88,41 @@ func channelExternalProc(c *eventsocket.Connection, call *CALL) (err error) {
 	//default fifo init.
 	//c.Execute("set", `continue_on_fail=true`, true)
 	//c.Execute("set", `hangup_after_bridge=true`, true)
+	if !call.CallFilterPassed() {
+		c.Execute("hangup", "CALL_REJECT", true)
+		return errors.New("function CallFilterPassed fail, Call Reject")
+	} else {
+		return channelExternalExecuteFifo()
+	}
+}
 
+func channelExternalExecuteFifo() error {
+	//todo next day.
 	return nil
 }
 
 ////////////////////////channel event action////////////////////
+
+func ChannelAction(c *eventsocket.Connection, e *eventsocket.Event) {
+	e.LogPrint()
+	eventName := e.Get("Event-Name")
+	if len(eventName) > 0 {
+		switch eventName {
+		case "BACKGROUND_JOB":
+			backgroundjobAction(c, e)
+		case "CHANNEL_STATE":
+			channelstateAction(c, e)
+		case "CHANNEL_CALLSTATE":
+			channelcallstateAction(c, e)
+		case "CHANNEL_HANGUP":
+			channelhangupAction(c, e)
+		case "CHANNEL_DESTROY":
+			channelCDRAction(c, e)
+		default:
+			//nothing todo.
+		}
+	}
+}
 
 //backgroundjobAction function.
 func backgroundjobAction(c *eventsocket.Connection, e *eventsocket.Event) {

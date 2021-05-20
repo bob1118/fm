@@ -24,17 +24,17 @@ func GetE164sCount(condition interface{}) (count int) {
 }
 
 //GetE164s function.
-func GetE164s(condition interface{}) (e164s []E164) {
+func GetE164s(condition interface{}) (e164s []E164, e error) {
 	query := fmt.Sprintf("select * from cc_e164s where %s", condition)
-	db.Select(&e164s, query)
-	return e164s
+	err := db.Select(&e164s, query)
+	return e164s, err
 }
 
 //IsExistE164Bynumber function.
-func IsExistE164Bynumber(new E164) (b bool, old E164) {
+func IsExistE164Bynumber(number string) (old E164, b bool) {
 	var is bool
 	e164 := E164{}
-	query := fmt.Sprintf("select * from cc_e164s where e164_number='%s' limit 1", new.Enumber)
+	query := fmt.Sprintf("select * from cc_e164s where e164_number='%s' limit 1", number)
 	if err := db.Get(&e164, query); err != nil {
 		if err == sql.ErrNoRows {
 			is = false
@@ -42,7 +42,7 @@ func IsExistE164Bynumber(new E164) (b bool, old E164) {
 	} else {
 		is = true
 	}
-	return is, e164
+	return e164, is
 }
 
 //CreateE164 function.

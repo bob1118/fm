@@ -18,7 +18,7 @@ func FifoMemberManage(c *eventsocket.Connection, originate string, is bool) (e e
 	var apicmd string
 	var op string
 
-	condition := fmt.Sprintf("member_string=%s", originate)
+	condition := fmt.Sprintf("member_string='%s'", originate)
 	if fifomembers, err := models.GetFifomembers(condition); err != nil {
 		log.Println(err)
 		return err

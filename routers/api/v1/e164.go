@@ -37,7 +37,7 @@ func GetE164s(c *gin.Context) {
 	}
 
 	data["count"] = models.GetE164sCount(condition)
-	data["lists"] = models.GetE164s(condition)
+	data["lists"], _ = models.GetE164s(condition)
 
 	c.JSON(http.StatusOK, gin.H{
 		"code": code,
@@ -68,7 +68,7 @@ func PostE164JSON(c *gin.Context) {
 		if e164.Enumber == "" {
 			code = ec.ERROR_PARAM_NULL
 		} else {
-			exist, _ := models.IsExistE164Bynumber(e164)
+			_, exist := models.IsExistE164Bynumber(e164.Enumber)
 			if exist {
 				code = ec.ERROR_ITEM_EXIST
 			} else {

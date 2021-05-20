@@ -70,6 +70,7 @@ CREATE TABLE cc_accounts (
 	CONSTRAINT cc_accounts_pkey PRIMARY KEY (account_uuid),
 	CONSTRAINT cc_accounts_un UNIQUE (account_id, account_domain)
 );
+COMMENT ON TABLE public.cc_accounts IS 'sofia internal useragent account';
 `
 const CC_GATEWAYS = `
 CREATE TABLE cc_gateways (
@@ -91,6 +92,7 @@ CREATE TABLE cc_gateways (
 	CONSTRAINT cc_gateways_pkey PRIMARY KEY (gateway_uuid),
 	CONSTRAINT cc_gateways_un UNIQUE (gateway_name)
 );
+COMMENT ON TABLE public.cc_gateways IS 'sofia external gateways gateway';
 `
 const CC_E164S = `
 CREATE TABLE cc_e164s (
@@ -103,6 +105,7 @@ CREATE TABLE cc_e164s (
 	CONSTRAINT cc_e164s_pkey PRIMARY KEY (e164_uuid),
 	CONSTRAINT cc_e164s_un UNIQUE (e164_number)
 );
+COMMENT ON TABLE public.cc_e164s IS 'phone numbers of external gateway';
 `
 const CC_ACCE164 = `
 CREATE TABLE cc_acce164 (
@@ -113,6 +116,7 @@ CREATE TABLE cc_acce164 (
 	e164_number varchar NOT NULL,
 	acce164_isdefault bool NOT NULL DEFAULT false
 );
+COMMENT ON TABLE public.cc_acce164 IS 'useragent dial out through the gateway';
 ALTER TABLE cc_acce164 ADD CONSTRAINT cc_acce164_fk FOREIGN KEY (account_id,account_domain) REFERENCES cc_accounts(account_id,account_domain) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE cc_acce164 ADD CONSTRAINT cc_acce164_fk_1 FOREIGN KEY (gateway_name) REFERENCES cc_gateways(gateway_name) ON DELETE CASCADE ON UPDATE CASCADE;
 ALTER TABLE cc_acce164 ADD CONSTRAINT cc_acce164_fk_2 FOREIGN KEY (e164_number) REFERENCES cc_e164s(e164_number) ON DELETE CASCADE ON UPDATE CASCADE;
@@ -126,6 +130,7 @@ CREATE TABLE cc_fifos (
 	fifo_holdmusic varchar NULL DEFAULT '',
 	CONSTRAINT cc_fifos_un UNIQUE (fifo_name)
 );
+COMMENT ON TABLE public.cc_fifos IS 'mod_fifo fifo';
 `
 const CC_FIFOMEMBER = `
 CREATE TABLE cc_fifomember (
@@ -136,7 +141,16 @@ CREATE TABLE cc_fifomember (
 	member_timeout varchar NULL DEFAULT 10,
 	member_lag varchar NULL DEFAULT 10
 );
+COMMENT ON TABLE public.cc_fifomember IS 'fifo''s member';
 ALTER TABLE public.cc_fifomember ADD CONSTRAINT cc_fifomember_fk FOREIGN KEY (fifo_name) REFERENCES cc_fifos(fifo_name) ON DELETE CASCADE ON UPDATE CASCADE;
+`
+const CC_BLACKLIST = `
+CREATE TABLE cc_blacklist (
+	blacklist_uuid uuid NOT NULL DEFAULT gen_random_uuid(),
+	blacklist_caller varchar NOT NULL,
+	blacklist_callee varchar NOT NULL
+);
+COMMENT ON TABLE public.cc_blacklist IS 'call filter blacklist include caller and callee';
 `
 const DEFAULT_ACCOUNTS = `
 insert into cc_accounts(account_id,account_name,account_auth,account_password,account_a1hash,account_group,account_domain,account_proxy,account_cacheable) values
