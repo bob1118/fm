@@ -8,8 +8,8 @@ import (
 	"github.com/bob1118/fm/models"
 )
 
-//default queue is cool_fifo@$${domain}
-//define queue fifos@fifomember;fifos@comsumer;
+//mod_fifo default queue is cool_fifo@$${domain}
+//define queue fifomember@fifos and fifoconsumer@fifos;
 //fifo member manage function, fifo_member add/fifo_member del
 
 //FifoMemberManage

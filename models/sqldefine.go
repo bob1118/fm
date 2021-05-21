@@ -198,14 +198,19 @@ insert into cc_acce164(account_id,account_domain,gateway_name,e164_number, acce1
 `
 const DEFAULT_FIFOS = `
 insert into cc_fifos(fifo_name)values
-('fifos@fifomember'),
-('fifos@fifoconsumer')
+('fifomember@fifos'),
+('fifoconsumer@fifos')
 `
 const DEFAULT_FIFOMEMBER = `
 insert into cc_fifomember(fifo_name,member_string)values
-('fifos@fifomember','user/8000@1.domain'),
-('fifos@fifomember','user/8001@1.domain'),
-('fifos@fifomember','user/8002@1.domain'),
-('fifos@fifomember','user/8003@1.domain'),
-('fifos@fifomember','user/8004@1.domain')
+('fifomember@fifos','user/8000@1.domain'),
+('fifomember@fifos','user/8001@1.domain'),
+('fifomember@fifos','user/8002@1.domain'),
+('fifomember@fifos','user/8003@1.domain'),
+('fifomember@fifos','user/8004@1.domain')
+`
+const DEFAULT_BLACKLIST = `
+insert into cc_blacklist(blacklist_caller,blacklist_callee)values
+('13012345678','80081234567'),
+('13112345678','80081234567')
 `

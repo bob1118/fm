@@ -9,7 +9,7 @@ import (
 //E164 struct.
 type E164 struct {
 	Euuid    string `db:"e164_uuid" json:"uuid"`
-	Gwuuid   string `db:"gateway_uuid" json:"guuid"`
+	Gwname   string `db:"gateway_name" json:"name"`
 	Enumber  string `db:"e164_number" json:"number"`
 	Eenable  bool   `db:"e164_enable" json:"enalbe"`
 	Elockin  bool   `db:"e164_lockin" json:"lockin"`
@@ -75,10 +75,10 @@ func IsExistE164Byuuid(uuid string) (exist bool, out E164) {
 func ModifyE164(old E164, new *E164) (e error) {
 	var err error
 	query := "update cc_e164s set "
-	if new.Gwuuid == "" {
-		new.Gwuuid = old.Gwuuid
+	if new.Gwname == "" {
+		new.Gwname = old.Gwname
 	} else {
-		query = fmt.Sprintf("%s gateway_uuid='%s',", query, new.Gwuuid)
+		query = fmt.Sprintf("%s gateway_name='%s',", query, new.Gwname)
 	}
 	if new.Enumber == "" {
 		new.Enumber = old.Enumber

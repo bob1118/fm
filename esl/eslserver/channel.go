@@ -85,19 +85,24 @@ func channelInternalProc(c *eventsocket.Connection, call *CALL) (err error) {
 
 //channelExternalProc
 func channelExternalProc(c *eventsocket.Connection, call *CALL) (err error) {
-	//default fifo init.
-	//c.Execute("set", `continue_on_fail=true`, true)
-	//c.Execute("set", `hangup_after_bridge=true`, true)
+
 	if !call.CallFilterPassed() {
 		c.Execute("hangup", "CALL_REJECT", true)
 		return errors.New("function CallFilterPassed fail, Call Reject")
 	} else {
-		return channelExternalExecuteFifo()
+		return channelExternalExecuteFifo(c)
 	}
 }
 
-func channelExternalExecuteFifo() error {
-	//todo next day.
+func channelExternalExecuteFifo(c *eventsocket.Connection) error {
+	//Put a caller into a FIFO queue
+	//<action application="fifo" data="myqueue in /tmp/exit-message.wav /tmp/music-on-hold.wav"/>
+	argv := `fifomember@fifos in`
+	if e, err := c.Execute(`fifo`, argv, true); err != nil {
+		log.Println(err)
+	} else {
+		e.LogPrint()
+	}
 	return nil
 }
 
