@@ -115,19 +115,19 @@ func customAction(e *eventsocket.Event) {
 		case "sofia::pre_register", "sofia::register_attempt", "sofia::register_failure": //sofia_reg_handle_register_token
 		case "sofia::register": //sofia_reg_handle_register_token
 			if len(user) > 0 && len(domain) > 0 {
-				originate_string := fmt.Sprintf(`user/%s@%s`, user, domain)
+				originate_string := fmt.Sprintf(`sofia/%s/%s`, domain, user)
 				run_time.SetUaOnline(e)
 				run_time.FifoMemberManage(ClientCon, originate_string, true)
 			}
 		case "sofia::unregister": //sofia_reg_handle_register_token
 			if len(user) > 0 && len(domain) > 0 {
-				originate_string := fmt.Sprintf(`user/%s@%s`, user, domain)
+				originate_string := fmt.Sprintf(`sofia/%s/%s`, domain, user)
 				run_time.SetUaOffline(e)
 				run_time.FifoMemberManage(ClientCon, originate_string, false)
 			}
 		case "sofia::expire": //sofia_reg_del_call_back
 			if len(user) > 0 && len(domain) > 0 {
-				originate_string := fmt.Sprintf(`user/%s@%s`, user, domain)
+				originate_string := fmt.Sprintf(`sofia/%s/%s`, domain, user)
 				run_time.SetUaOffline(e)
 				run_time.FifoMemberManage(ClientCon, originate_string, false)
 			}

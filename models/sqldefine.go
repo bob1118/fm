@@ -203,11 +203,11 @@ insert into cc_fifos(fifo_name)values
 `
 const DEFAULT_FIFOMEMBER = `
 insert into cc_fifomember(fifo_name,member_string)values
-('fifomember@fifos','user/8000@1.domain'),
-('fifomember@fifos','user/8001@1.domain'),
-('fifomember@fifos','user/8002@1.domain'),
-('fifomember@fifos','user/8003@1.domain'),
-('fifomember@fifos','user/8004@1.domain')
+('fifomember@fifos','sofia/1.domain/8000'),
+('fifomember@fifos','sofia/1.domain/8001'),
+('fifomember@fifos','sofia/1.domain/8002'),
+('fifomember@fifos','sofia/1.domain/8003'),
+('fifomember@fifos','sofia/1.domain/8004')
 `
 const DEFAULT_BLACKLIST = `
 insert into cc_blacklist(blacklist_caller,blacklist_callee)values
