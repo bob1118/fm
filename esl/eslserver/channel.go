@@ -13,43 +13,33 @@ import (
 ////////////////////first event CHANNEL_DATA action///////////////////////////
 
 //DefaultChannelAction
-func ChannelDefaultAction(c *eventsocket.Connection, e *eventsocket.Event) error {
+func ChannelDefaultAction(c *eventsocket.Connection, ev *eventsocket.Event) error {
 	var myerr error
-
-	call := &CALL{
-		coreuuid:          e.Get("Core-Uuid"),
-		fsipv4:            e.Get("Freeswitch-Ipv4"),
-		eventname:         e.Get("Event-Name"),
-		uuid:              e.Get("Variable_uuid"),
-		callid:            e.Get("Variable_call_uuid"),
-		direction:         e.Get("Variable_direction"),
-		profile:           e.Get("Variable_sofia_profile_name"),
-		domain:            e.Get("Variable_domain_name"),
-		gateway:           e.Get("Variable_sip_gateway"),
-		ani:               e.Get("Caller-Ani"),
-		distinationnumber: e.Get("Caller-Destination-Number"),
-	}
-
-	//send myevents
-	if myevent, err := c.Send("myevents"); err != nil {
+	if call, err := NewCall(ev); err != nil {
 		myerr = err
 		log.Println(err)
 	} else {
-		myevent.LogPrint()
-	}
-
-	if utils.IsEqual(call.direction, "inbound") {
-		switch call.profile {
-		case "internal", "internal-ipv6": //internal ua incoming
-			myerr = channelInternalProc(c, call)
-		case "external", "external-ipv6": //external gateway incoming
-			myerr = channelExternalProc(c, call)
-		default:
-			myerr = errors.New("CHANNEL_DATA:known profile")
+		//send myevents
+		if myevent, err := c.Send("myevents"); err != nil {
+			myerr = err
+			log.Println(err)
+		} else {
+			myevent.LogPrint()
 		}
-	} else {
-		//outgoing hit socket?
-		e.LogPrint()
+		//
+		if utils.IsEqual(call.direction, "inbound") { //incoming call
+			switch call.profile {
+			case "internal", "internal-ipv6": //internal ua incoming
+				myerr = channelInternalProc(c, call)
+			case "external", "external-ipv6": //external gateway incoming
+				myerr = channelExternalProc(c, call)
+			default:
+				myerr = errors.New("CHANNEL_DATA:known profile")
+			}
+		} else { //outgoing call hit socket?
+			//
+			ev.LogPrint()
+		}
 	}
 	return myerr
 }

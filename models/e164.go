@@ -45,6 +45,21 @@ func IsExistE164Bynumber(number string) (old E164, b bool) {
 	return e164, is
 }
 
+//IsExistE164BynumberEx
+func IsExistE164BynumberEx(gateway, number string) (old E164, b bool) {
+	var is bool
+	e164 := E164{}
+	query := fmt.Sprintf("select * from cc_e164s where e164_gateway='%s' and e164_number='%s' limit 1", gateway, number)
+	if err := db.Get(&e164, query); err != nil {
+		if err == sql.ErrNoRows {
+			is = false
+		}
+	} else {
+		is = true
+	}
+	return e164, is
+}
+
 //CreateE164 function.
 func CreateE164(in *E164) (e error) {
 	var err error

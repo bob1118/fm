@@ -117,6 +117,6 @@ func SetGatewayState(e *eventsocket.Event) {
 	}
 }
 
-func mapClean(m sync.Map) {
-	m.Range(func(k, v interface{}) bool { m.Delete(k); return true })
-}
+// func mapClean(m sync.Map) {
+// 	m.Range(func(k, v interface{}) bool { m.Delete(k); return true })
+// }
