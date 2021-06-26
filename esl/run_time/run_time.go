@@ -111,7 +111,7 @@ func SetGatewayState(e *eventsocket.Event) {
 	if _, isloaded := gwmap.LoadOrStore(gw.gateway, &gw); isloaded {
 		gwmap.Delete(gw.gateway)
 		gwmap.Store(gw.gateway, &gw)
-		log.Println("SetGatewayState: update value")
+		log.Printf("SetGatewayState:%v\n", gw)
 	} else {
 		log.Println(gw)
 	}
