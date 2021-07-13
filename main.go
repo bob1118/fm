@@ -7,12 +7,14 @@ import (
 
 	"github.com/bob1118/fm/config/fmconfig"
 	"github.com/bob1118/fm/esl"
+	"github.com/bob1118/fm/models"
 	"github.com/bob1118/fm/routers"
 	"github.com/bob1118/fm/routers/fsapi/xmlbuilder"
 )
 
 func main() {
 
+	models.Init()
 	xmlbuilder.BuildPersonalConf()
 
 	//do http api gateway

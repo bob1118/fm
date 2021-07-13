@@ -11,6 +11,8 @@ import (
 
 var db, cdrdb *sqlx.DB
 
+func Init() {}
+
 //init function.
 func init() {
 	InitFreeswitch("user=postgres password=fuckIBM host=127.0.0.1 dbname=postgres sslmode=disable")

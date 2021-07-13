@@ -34,7 +34,7 @@ import (
 
 const bufferSize = 1024 << 6 // For the socket reader
 const eventsBuffer = 16      // For the events channel (memory eater!)
-const timeoutPeriod = 60 * time.Second
+const timeoutPeriod = 16 * time.Second
 
 var errMissingAuthRequest = errors.New("Missing auth request")
 var errInvalidPassword = errors.New("Invalid password")
@@ -43,11 +43,11 @@ var errTimeout = errors.New("Timeout")
 
 // Connection is the event socket connection handler.
 type Connection struct {
-	conn          net.Conn
-	reader        *bufio.Reader
-	textreader    *textproto.Reader
-	err           chan error
-	cmd, api, evt chan *Event
+	conn                net.Conn
+	reader              *bufio.Reader
+	textreader          *textproto.Reader
+	cmderr, apierr, err chan error
+	cmd, api, evt       chan *Event
 }
 
 // newConnection allocates a new Connection and initialize its buffers.
@@ -55,10 +55,12 @@ func newConnection(c net.Conn) *Connection {
 	h := Connection{
 		conn:   c,
 		reader: bufio.NewReaderSize(c, bufferSize),
-		err:    make(chan error, 1),
 		cmd:    make(chan *Event),
+		cmderr: make(chan error, 1),
 		api:    make(chan *Event),
+		apierr: make(chan error, 1),
 		evt:    make(chan *Event, eventsBuffer),
+		err:    make(chan error, 1),
 	}
 	h.textreader = textproto.NewReader(h.reader)
 	return &h
@@ -178,7 +180,7 @@ func (h *Connection) readOne() bool {
 	case "command/reply":
 		reply := hdr.Get("Reply-Text")
 		if reply[:2] == "-E" {
-			h.err <- errors.New(reply[5:])
+			h.cmderr <- errors.New(reply[5:])
 			return true
 		}
 		if reply[0] == '%' {
@@ -189,7 +191,7 @@ func (h *Connection) readOne() bool {
 		h.cmd <- resp
 	case "api/response":
 		if string(resp.Body[:2]) == "-E" {
-			h.err <- errors.New(string(resp.Body)[5:])
+			h.apierr <- errors.New(string(resp.Body)[5:])
 			return true
 		}
 		copyHeaders(&hdr, resp, false)
@@ -336,7 +338,9 @@ func (h *Connection) Send(command string) (*Event, error) {
 		err error
 	)
 	select {
-	case err = <-h.err:
+	case err = <-h.cmderr:
+		return nil, err
+	case err = <-h.apierr:
 		return nil, err
 	case ev = <-h.cmd:
 		return ev, nil
@@ -407,7 +411,7 @@ func (h *Connection) SendMsg(m MSG, uuid, appData string) (*Event, error) {
 		err error
 	)
 	select {
-	case err = <-h.err:
+	case err = <-h.cmderr:
 		return nil, err
 	case ev = <-h.cmd:
 		return ev, nil
@@ -462,7 +466,7 @@ func (r *Event) String() string {
 	if r.Body == "" {
 		return fmt.Sprintf("%s", r.Header)
 	} else {
-		return fmt.Sprintf("%s body=%s", r.Header, r.Body)
+		return fmt.Sprintf("%s\r\n%s", r.Header, r.Body)
 	}
 }
 

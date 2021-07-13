@@ -12,6 +12,8 @@ func eventAction(e *eventsocket.Event) {
 	eventName := e.Get("Event-Name")
 	if len(eventName) > 0 {
 		switch eventName {
+		case "API":
+			apiAction(e)
 		case "CUSTOM":
 			customAction(e)
 		case "BACKGROUND_JOB":
@@ -29,6 +31,8 @@ func eventAction(e *eventsocket.Event) {
 		}
 	}
 }
+
+func apiAction(e *eventsocket.Event) {}
 
 func customAction(e *eventsocket.Event) {
 	user := e.Get("User_Name")

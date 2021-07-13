@@ -133,3 +133,18 @@ func eventUnsubscribe(format string, enames ...string) bool {
 	}
 	return isOK
 }
+
+//eslclient send api command return api response body.
+func SendApiCommand(cmd string) string {
+	var response string
+	if len(cmd) > 0 {
+		apicommand := "api" + " " + cmd
+		if ev, err := ClientCon.Send(apicommand); err != nil {
+			response = err.Error()
+		} else {
+			ev.LogPrint()
+			response = ev.Body
+		}
+	}
+	return response
+}
