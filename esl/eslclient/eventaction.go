@@ -2,9 +2,11 @@ package eslclient
 
 import (
 	"fmt"
+	"log"
 
 	"github.com/bob1118/fm/esl/eventsocket"
 	"github.com/bob1118/fm/esl/run_time"
+	"github.com/bob1118/fm/models"
 )
 
 //eventAction function.
@@ -69,31 +71,19 @@ func customAction(e *eventsocket.Event) {
 
 //backgroundjobAction function.
 func backgroundjobAction(e *eventsocket.Event) {
-	bgcommand := e.Get("Job-Command")
-	if len(bgcommand) > 0 {
-		switch bgcommand {
-		case "originate", "Originate", "ORIGINATE":
-			// in := models.BackgroundJob{}
-			// in.BgjobUUID = e.Header["Job-Uuid"].(string)
-			// in.BgjobCommand = bgcommand
-			// in.BgjobCmdArg = e.Header["Job-Command-Arg"].(string)
-			// //+OK 9fbc526c-80c2-49c8-bc2d-9735872dfa53//-ERR UNALLOCATED_NUMBER
-			// body := strings.Split(e.Body, " ")
-			// in.BgjobResult = strings.TrimSpace(body[1])
-			// switch body[0] {
-			// case "+OK":
-			// 	in.BgjobReturn = true
-			// case "-ERR":
-			// 	in.BgjobReturn = false
-			// }
-			// if err := models.CreateBgjob(&in); err != nil {
-			// 	log.Println(err)
-			// }
-		case "command":
-			//todo.
-		default:
-			//todo.
-		}
+	job := &models.Bgjob{
+		Juuid:    e.Get("Job-Uuid"),
+		Jcmd:     e.Get("Job-Command"),
+		Jcmdarg:  e.Get("Job-Command-Arg"),
+		Jcontent: e.Body,
+	}
+	if false ||
+		len(job.Juuid) == 0 ||
+		len(job.Jcmd) == 0 ||
+		len(job.Jcontent) == 0 {
+		log.Println(e)
+	} else {
+		models.CreateBgjob(job)
 	}
 }
 

@@ -136,6 +136,12 @@ func eventUnsubscribe(format string, enames ...string) bool {
 
 //eslclient send api command return api response body.
 func SendApiCommand(cmd string) string {
+	// api version
+
+	// Content-Type: api/response
+	// Content-Length: 85
+
+	// FreeSWITCH Version 1.10.6-release-18-1ff9d0a60e~64bit (-release-18-1ff9d0a60e 64bit)
 	var response string
 	if len(cmd) > 0 {
 		apicommand := "api" + " " + cmd
@@ -147,4 +153,25 @@ func SendApiCommand(cmd string) string {
 		}
 	}
 	return response
+}
+
+//eslclient send bgapi command return command reply Job-UUID.
+func SendBgapiCommand(cmd string) string {
+	// 	bgapi version
+
+	// Content-Type: command/reply
+	// Reply-Text: +OK Job-UUID: 2b5563b2-d465-4d90-8abd-52a032d0933f
+	// Job-UUID: 2b5563b2-d465-4d90-8abd-52a032d0933f
+
+	var reply string
+	if len(cmd) > 0 {
+		bgapicommand := "bgapi" + " " + cmd
+		if ev, err := ClientCon.Send(bgapicommand); err != nil {
+			reply = err.Error()
+		} else {
+			ev.LogPrint()
+			reply = ev.Get("Job-Uuid")
+		}
+	}
+	return reply
 }

@@ -152,6 +152,18 @@ CREATE TABLE cc_blacklist (
 );
 COMMENT ON TABLE public.cc_blacklist IS 'call filter blacklist include caller and callee';
 `
+const CC_BGJOBS = `
+CREATE TABLE cc_bgjobs (
+	job_uuid uuid NOT NULL,
+	job_cmd varchar,
+	job_cmdarg varchar,
+	job_content varchar
+);
+COMMENT ON TABLE public.cc_bgjobs IS 'eslclient execute bgapi command then receive BACKGROUND_JOB ';
+`
+
+//freeswitdh db tables default values.
+
 const DEFAULT_ACCOUNTS = `
 insert into cc_accounts(account_id,account_name,account_auth,account_password,account_a1hash,account_group,account_domain,account_proxy,account_cacheable) values
 ('8000','8000','8000','8000','','default','10.10.10.250','10.10.10.250',''),

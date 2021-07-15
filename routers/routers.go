@@ -3,6 +3,8 @@ package routers
 import (
 	"github.com/bob1118/fm/config/fmconfig"
 	"github.com/bob1118/fm/routers/api/apicmd"
+	"github.com/bob1118/fm/routers/api/bgapicmd"
+	"github.com/bob1118/fm/routers/api/call"
 	v1 "github.com/bob1118/fm/routers/api/v1"
 	"github.com/bob1118/fm/routers/fsapi"
 	"github.com/gin-gonic/gin"
@@ -36,9 +38,8 @@ func NewRouter() *gin.Engine {
 		apiv1.DELETE("/e164s/:uuid", v1.DeleteE164)
 	}
 
-	r.GET("/apicmd", apicmd.Get)
-	r.POST("/call/dial")
-	r.POST("/call/dialout")
-
+	r.GET("/api", apicmd.Get)
+	r.GET("/bgapi", bgapicmd.Get)
+	r.POST("/call", call.PostDial)
 	return r
 }

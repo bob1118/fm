@@ -55,6 +55,7 @@ func InitFreeswitch(strcon string) {
 		pgsqlInitFreeswitchFifos()
 		pgsqlInitFreeswitchFifomember()
 		pgsqlInitFreeswitchBlacklist()
+		pgsqlINitFreeswitchBgjob()
 	}
 }
 
@@ -227,6 +228,20 @@ func pgsqlInitFreeswitchBlacklist() {
 		if !isFound {
 			db.MustExec(CC_BLACKLIST)
 			db.MustExec(DEFAULT_BLACKLIST)
+		}
+	}
+}
+
+//pgsqlINitFreeswitchBgjob
+func pgsqlINitFreeswitchBgjob() {
+	var err error
+	var isFound bool
+
+	if err = db.Get(&isFound, "select count(1)!=0 as isFound from pg_tables where tablename=$1", "cc_bgjobs"); err != nil {
+		log.Println(err.Error())
+	} else {
+		if !isFound {
+			db.MustExec(CC_BGJOBS)
 		}
 	}
 }
