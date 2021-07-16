@@ -13,6 +13,10 @@ import (
 func Get(c *gin.Context) {
 	var cmd, result string
 	cmd = c.Query("cmd")
-	result = eslclient.SendBgapiCommand(cmd)
+	if jobuuid, err := eslclient.SendBgapiCommand(cmd); err != nil {
+		result = err.Error()
+	} else {
+		result = jobuuid
+	}
 	c.String(200, result)
 }

@@ -40,6 +40,6 @@ func NewRouter() *gin.Engine {
 
 	r.GET("/api", apicmd.Get)
 	r.GET("/bgapi", bgapicmd.Get)
-	r.POST("/call", call.PostDial)
+	r.POST("/call", call.PostOriginateExecuteBridge)
 	return r
 }

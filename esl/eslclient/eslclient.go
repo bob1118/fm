@@ -156,22 +156,21 @@ func SendApiCommand(cmd string) string {
 }
 
 //eslclient send bgapi command return command reply Job-UUID.
-func SendBgapiCommand(cmd string) string {
+func SendBgapiCommand(cmd string) (uuid string, e error) {
 	// 	bgapi version
 
 	// Content-Type: command/reply
 	// Reply-Text: +OK Job-UUID: 2b5563b2-d465-4d90-8abd-52a032d0933f
 	// Job-UUID: 2b5563b2-d465-4d90-8abd-52a032d0933f
 
-	var reply string
+	var jobuuid string
 	if len(cmd) > 0 {
 		bgapicommand := "bgapi" + " " + cmd
 		if ev, err := ClientCon.Send(bgapicommand); err != nil {
-			reply = err.Error()
+			return "", err
 		} else {
-			ev.LogPrint()
-			reply = ev.Get("Job-Uuid")
+			jobuuid = ev.Get("Job-Uuid")
 		}
 	}
-	return reply
+	return jobuuid, nil
 }
